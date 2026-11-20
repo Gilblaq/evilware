@@ -8,6 +8,7 @@
 #include <QVBoxLayout>
 #include <QGridLayout>
 #include <QLabel>
+#include <QLineEdit>
 #include <QPushButton>
 #include <QFrame>
 #include <QFileSystemModel>

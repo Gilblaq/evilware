@@ -7,6 +7,7 @@
 #include <QHBoxLayout>
 #include <QProcess>
 #include <QRegularExpression>
+#include <QLabel>
 CyberLabWidget::CyberLabWidget(QWidget*p):QWidget(p),process(new QProcess(this)){
  auto*v=new QVBoxLayout(this);auto*r=new QHBoxLayout;tool=new QComboBox;tool->addItems({"Ping","DNS lookup (nslookup)","Route trace","Network configuration"});target=new QLineEdit("example.com");auto*b=new QPushButton("Run diagnostic");r->addWidget(tool);r->addWidget(target,1);r->addWidget(b);v->addLayout(r);
  result=new QPlainTextEdit;result->setReadOnly(true);result->setStyleSheet("background:#0b1018;color:#cde4d8;font-family:Consolas,monospace;");v->addWidget(result,1);

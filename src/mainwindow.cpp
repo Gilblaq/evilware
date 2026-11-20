@@ -6,6 +6,7 @@
 #include "systeminfo.h"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
+#include <QGridLayout>
 #include <QLabel>
 #include <QPushButton>
 #include <QFrame>
@@ -43,7 +44,7 @@ QWidget* MainWindow::filePage(){
 QWidget* MainWindow::gitPage(){
  auto*w=new QWidget;auto*v=new QVBoxLayout(w);auto*label=new QLabel("Git Manager — run Git commands in a selected working folder.");v->addWidget(label);
  auto*path=new QLineEdit(QDir::homePath());v->addWidget(path);auto*out=new QPlainTextEdit;out->setReadOnly(true);v->addWidget(out,1);
- auto*row=new QHBoxLayout;for(QString cmd:{"status","log --oneline -10","branch --all"}){auto*b=new QPushButton("git "+cmd);row->addWidget(b);connect(b,&QPushButton::clicked,w,[path,out,cmd]{auto*p=new QProcess(w);p->setWorkingDirectory(path->text());p->start("git",cmd.split(' '));QObject::connect(p,&QProcess::readyReadStandardOutput,[p,out]{out->appendPlainText(QString::fromLocal8Bit(p->readAllStandardOutput()));});QObject::connect(p,&QProcess::readyReadStandardError,[p,out]{out->appendPlainText(QString::fromLocal8Bit(p->readAllStandardError()));});QObject::connect(p,qOverload<int,QProcess::ExitStatus>(&QProcess::finished),p,&QObject::deleteLater);});}v->addLayout(row);return w;
+ auto*row=new QHBoxLayout;for(QString cmd:{"status","log --oneline -10","branch --all"}){auto*b=new QPushButton("git "+cmd);row->addWidget(b);connect(b,&QPushButton::clicked,w,[path,out,cmd,w]{auto*p=new QProcess(w);p->setWorkingDirectory(path->text());p->start("git",cmd.split(' '));QObject::connect(p,&QProcess::readyReadStandardOutput,[p,out]{out->appendPlainText(QString::fromLocal8Bit(p->readAllStandardOutput()));});QObject::connect(p,&QProcess::readyReadStandardError,[p,out]{out->appendPlainText(QString::fromLocal8Bit(p->readAllStandardError()));});QObject::connect(p,qOverload<int,QProcess::ExitStatus>(&QProcess::finished),p,&QObject::deleteLater);});}v->addLayout(row);return w;
 }
 QWidget* MainWindow::settingsPage(){
  auto*w=new QWidget;auto*v=new QVBoxLayout(w);v->addWidget(new QLabel("NEXUS Settings"));v->addWidget(new QLabel("Version 1.0.0\nTheme: Midnight Graphite\nTerminal commands run locally under your Windows user account.\nOptional integrations are not bundled.\nCyber Lab is restricted to basic authorized network diagnostics."));v->addStretch();return w;

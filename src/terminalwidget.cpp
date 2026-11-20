@@ -2,6 +2,7 @@
 #include <QComboBox>
 #include <QLineEdit>
 #include <QPlainTextEdit>
+#include <QTextCursor>
 #include <QProcess>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -33,7 +34,7 @@ void TerminalWidget::startShell(){
  else if(shell->currentIndex()==1){program="cmd.exe";args={"/Q","/K"};}
  else {program="wsl.exe";args={"--exec","bash","-l"};}
 #else
- if(shell->currentIndex()==2){program="bash";args={"-l"};} else {program="bash";args={"-l"};}
+ program="bash";args={"-l"};
 #endif
  proc->setWorkingDirectory(QDir::homePath()); proc->start(program,args);
  status->setText("Starting…"); append("\n[NEXUS] Starting "+program+"\n");

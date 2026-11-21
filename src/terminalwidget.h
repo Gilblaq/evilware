@@ -11,6 +11,7 @@ class TerminalWidget : public QWidget {
  Q_OBJECT
 public:
  explicit TerminalWidget(QWidget *parent=nullptr);
+ void setShellIndex(int index);
 private slots:
  void startShell();
  void sendCommand();

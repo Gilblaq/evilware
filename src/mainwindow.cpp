@@ -5,6 +5,7 @@
 #include "cyberlabwidget.h"
 #include "pluginstorewidget.h"
 #include "modulepage.h"
+#include "startupwidget.h"
 #include "systeminfo.h"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -27,7 +28,7 @@ MainWindow::MainWindow(QWidget *p):QMainWindow(p){
  setWindowIcon(QIcon());
  resize(1440,900);
  setMinimumSize(1050,680);
- auto *root=new QWidget;root->setObjectName("appRoot");
+ auto *root=new SkullBackdrop;root->setObjectName("appRoot");
  auto *outer=new QHBoxLayout(root);outer->setContentsMargins(0,0,0,0);outer->setSpacing(0);
  auto *sidebar=new QFrame;sidebar->setObjectName("sidebar");sidebar->setFixedWidth(258);
  auto *side=new QVBoxLayout(sidebar);side->setContentsMargins(18,20,18,16);side->setSpacing(8);
@@ -43,7 +44,7 @@ MainWindow::MainWindow(QWidget *p):QMainWindow(p){
  for(const QString &name:items){auto *item=new QListWidgetItem(name);item->setSizeHint(QSize(205,39));nav->addItem(item);}
  side->addWidget(nav,1);
  auto *footer=new QLabel("EVILWARE  ·  THE UNHOLY CORE 3");footer->setObjectName("sidebarFooter");side->addWidget(footer);
- auto *mainArea=new QWidget;mainArea->setObjectName("mainArea");auto *mainLayout=new QVBoxLayout(mainArea);mainLayout->setContentsMargins(0,0,0,0);mainLayout->setSpacing(0);
+ auto *mainArea=new QWidget;mainArea->setAttribute(Qt::WA_TranslucentBackground);mainArea->setObjectName("mainArea");auto *mainLayout=new QVBoxLayout(mainArea);mainLayout->setContentsMargins(0,0,0,0);mainLayout->setSpacing(0);
  auto *topbar=new QFrame;topbar->setObjectName("topbar");topbar->setFixedHeight(66);auto *top=new QHBoxLayout(topbar);top->setContentsMargins(26,0,26,0);
  activePage=new QLabel("Dashboard");activePage->setObjectName("topbarTitle");
  auto *workspaceLabel=new QLabel("THE UNHOLY CORE 3  /  LOCAL WORKSPACE");workspaceLabel->setObjectName("mutedText");top->addWidget(activePage);top->addStretch();top->addWidget(workspaceLabel);mainLayout->addWidget(topbar);
@@ -80,26 +81,26 @@ MainWindow::MainWindow(QWidget *p):QMainWindow(p){
 
  connect(nav,&QListWidget::currentRowChanged,this,&MainWindow::showPage);nav->setCurrentRow(0);
  setStyleSheet(R"(
- QMainWindow,QWidget#appRoot,QWidget#mainArea{background:#101318;color:#e7ebf1;font-family:"Segoe UI",Arial;font-size:10pt}
- QFrame#sidebar{background:#171b21;border-right:1px solid #2a3039}
- QLabel#brandMark{background:#2563eb;color:white;font-size:23px;font-weight:700;border-radius:9px;min-width:42px;max-width:42px;min-height:42px;max-height:42px;qproperty-alignment:AlignCenter}
+ QMainWindow,QWidget#appRoot,QWidget#mainArea{background:transparent;color:#e7ebf1;font-family:"Segoe UI",Arial;font-size:10pt}
+ QFrame#sidebar{background:#11151b;border-right:1px solid #2a3039}
+ QLabel#brandMark{background:#a90014;color:white;font-size:23px;font-weight:700;border-radius:9px;min-width:42px;max-width:42px;min-height:42px;max-height:42px;qproperty-alignment:AlignCenter}
  QLabel#brandName{color:#f5f7fa;font-size:20px;font-weight:700;letter-spacing:1px}
  QLabel#brandCaption,QLabel#sectionCaption,QLabel#sidebarFooter{color:#7f8a99;font-size:8pt;letter-spacing:1px}
  QListWidget#mainNavigation{background:transparent;color:#aeb8c6;border:0;font-size:10pt;outline:0}
  QListWidget#mainNavigation::item{padding:9px 12px;border-radius:7px}
  QListWidget#mainNavigation::item:hover{background:#222a35;color:#f4f7fb}
- QListWidget#mainNavigation::item:selected{background:#253b5b;color:#ffffff;border-left:3px solid #4b8df8;padding-left:9px}
- QFrame#topbar{background:#171b21;border-bottom:1px solid #2a3039}
+ QListWidget#mainNavigation::item:selected{background:#43151b;color:#ffffff;border-left:3px solid #e12636;padding-left:9px}
+ QFrame#topbar{background:rgba(17,20,26,235);border-bottom:1px solid #2a3039}
  QLabel#topbarTitle{font-size:12pt;font-weight:600;color:#f3f5f8}
  QLabel#mutedText{color:#909baa}
  QLabel#pageTitle{font-size:23px;font-weight:650;color:#f4f6f9}
  QLabel#cardTitle{font-size:12pt;font-weight:600;color:#f0f3f7}
  QLabel#bodyText{color:#c4ccd6}
- QFrame#pluginCard,QFrame#infoCard{background:#191f27;border:1px solid #2c3541;border-radius:10px}
+ QFrame#pluginCard,QFrame#infoCard{background:rgba(20,24,31,225);border:1px solid #2c3541;border-radius:10px}
  QPushButton{background:#283342;color:#e8edf4;border:1px solid #394657;border-radius:6px;padding:8px 13px}
  QPushButton:hover{background:#344357}
- QPushButton#primaryButton{background:#2864c7;border:1px solid #3475df;color:white;font-weight:600}
- QPushButton#primaryButton:hover{background:#3475df}
+ QPushButton#primaryButton{background:#a90014;border:1px solid #e12636;color:white;font-weight:600}
+ QPushButton#primaryButton:hover{background:#c81729}
  QPushButton#secondaryButton{background:#202833;color:#cbd5e1}
  QLineEdit,QComboBox,QPlainTextEdit,QTreeView{background:#141a22;color:#e7edf5;border:1px solid #35404e;border-radius:6px;padding:8px;selection-background-color:#315d9a}
  QPlainTextEdit{font-family:Consolas,monospace}

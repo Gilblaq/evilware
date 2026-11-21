@@ -35,6 +35,10 @@ SystemMonitorWidget::SystemMonitorWidget(QWidget *parent) : QWidget(parent) {
     description->setWordWrap(true);
     layout->addWidget(description);
 
+    resourceLabel = new QLabel("CPU: collecting sample...    Memory: reading...");
+    resourceLabel->setObjectName("cardTitle");
+    layout->addWidget(resourceLabel);
+
     auto *toolbar = new QHBoxLayout;
     filterEdit = new QLineEdit;
     filterEdit->setPlaceholderText("Filter by process name or PID...");
@@ -72,6 +76,8 @@ SystemMonitorWidget::SystemMonitorWidget(QWidget *parent) : QWidget(parent) {
 
     refreshTimer = new QTimer(this);
     refreshTimer->setInterval(3000);
+    resourceTimer = new QTimer(this);
+    resourceTimer->setInterval(1000);
     connect(refreshButton, &QPushButton::clicked, this, &SystemMonitorWidget::refreshProcesses);
     connect(filterEdit, &QLineEdit::textChanged, this, &SystemMonitorWidget::filterProcesses);
     connect(autoRefresh, &QCheckBox::toggled, this, [this](bool enabled) {
@@ -83,7 +89,10 @@ SystemMonitorWidget::SystemMonitorWidget(QWidget *parent) : QWidget(parent) {
         }
     });
     connect(refreshTimer, &QTimer::timeout, this, &SystemMonitorWidget::refreshProcesses);
+    connect(resourceTimer, &QTimer::timeout, this, &SystemMonitorWidget::refreshResources);
     refreshTimer->start();
+    resourceTimer->start();
+    refreshResources();
     refreshProcesses();
 }
 
@@ -149,6 +158,51 @@ void SystemMonitorWidget::refreshProcesses() {
     filterProcesses(filterEdit->text());
 #else
     summaryLabel->setText("Process inspection is currently implemented for Windows.");
+#endif
+}
+
+void SystemMonitorWidget::refreshResources() {
+#ifdef Q_OS_WIN
+    MEMORYSTATUSEX memory{};
+    memory.dwLength = sizeof(memory);
+    QString memoryText = "Memory: unavailable";
+    if (GlobalMemoryStatusEx(&memory)) {
+        const double totalGb = double(memory.ullTotalPhys) / (1024.0 * 1024.0 * 1024.0);
+        const double usedGb = double(memory.ullTotalPhys - memory.ullAvailPhys) / (1024.0 * 1024.0 * 1024.0);
+        memoryText = QString("Memory: %1%  (%2 / %3 GB)")
+            .arg(memory.dwMemoryLoad)
+            .arg(usedGb, 0, 'f', 1)
+            .arg(totalGb, 0, 'f', 1);
+    }
+
+    FILETIME idleTime{}, kernelTime{}, userTime{};
+    QString cpuText = "CPU: sampling...";
+    if (GetSystemTimes(&idleTime, &kernelTime, &userTime)) {
+        auto toValue = [](const FILETIME &value) -> quint64 {
+            ULARGE_INTEGER result{};
+            result.LowPart = value.dwLowDateTime;
+            result.HighPart = value.dwHighDateTime;
+            return result.QuadPart;
+        };
+        const quint64 idle = toValue(idleTime);
+        const quint64 kernel = toValue(kernelTime);
+        const quint64 user = toValue(userTime);
+        if (hasCpuSample) {
+            const quint64 idleDelta = idle - previousIdle;
+            const quint64 totalDelta = (kernel - previousKernel) + (user - previousUser);
+            if (totalDelta > 0) {
+                const double busy = 100.0 * double(totalDelta - qMin(idleDelta, totalDelta)) / double(totalDelta);
+                cpuText = QString("CPU: %1%").arg(busy, 0, 'f', 1);
+            }
+        }
+        previousIdle = idle;
+        previousKernel = kernel;
+        previousUser = user;
+        hasCpuSample = true;
+    }
+    resourceLabel->setText(cpuText + "     •     " + memoryText);
+#else
+    resourceLabel->setText("Live CPU and memory metrics are currently supported on Windows.");
 #endif
 }
 

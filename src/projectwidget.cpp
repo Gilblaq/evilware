@@ -11,6 +11,7 @@
 #include <QMessageBox>
 #include <QProcess>
 #include <QStandardPaths>
+#include <QRegularExpression>
 ProjectWidget::ProjectWidget(QWidget*p):QWidget(p){
  auto*v=new QVBoxLayout(this);auto*form=new QFormLayout;name=new QLineEdit("MyEVILWAREProject");location=new QLineEdit(QDir::homePath()+"/EVILWAREProjects");
  kind=new QComboBox;kind->addItems({"C++ Console (CMake)","Python application","Web starter (HTML/CSS/JS)"});
@@ -37,7 +38,7 @@ void ProjectWidget::ensureDependency(const QString &label,const QString &executa
  process->start();
 }
 void ProjectWidget::createProject(){
- QString n=name->text().trimmed();if(n.isEmpty()||n.contains('/')||n.contains('\\')||n=="."||n==".."){QMessageBox::warning(this,"Invalid name","Enter a simple project name without path separators.");return;}
+ QString n=name->text().trimmed();static const QRegularExpression safeName("^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$");if(!safeName.match(n).hasMatch()){QMessageBox::warning(this,"Invalid name","Use 1–64 characters: letters, numbers, hyphens and underscores. The first character must be a letter or number.");return;}
  QDir parent(location->text());if(!parent.exists()&&!parent.mkpath(".")){message->setText("Could not create parent folder.");return;}
  if(parent.exists(n)){QMessageBox::warning(this,"Already exists","That project folder already exists.");return;}
  if(!parent.mkdir(n)){message->setText("Could not create project folder.");return;}

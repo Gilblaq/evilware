@@ -25,27 +25,27 @@ EVILWARE is a native Windows x64 developer command centre built with C++20 and Q
 19. Settings
 20. Documentation
 
-## Implemented tools in this foundation build
+## Current implementation status
 
-- Dashboard: operating system, architecture, host, processor and memory summary.
-- Build Apps: starter project generation for C++/CMake, Python and HTML/CSS/JavaScript.
-- Code Studio: open, edit and save local source/text files.
-- Linux Terminal: WSL shell launch (requires WSL).
-- Windows Terminal: PowerShell, Command Prompt and WSL shell selector.
-- Cyber Lab: basic ping, DNS, route trace and local network configuration diagnostics for authorized testing.
-- File Manager: browse the current user's home folder.
-- Git Manager: status, recent log and branch listing in a selected folder.
-- Plugin Store: initial catalogue with winget installation handoff for Git, VS Code, Python, Node.js, Docker Desktop, Ubuntu WSL, Nmap and Wireshark.
+Implemented foundations include project generation, source-file editing, local PowerShell/CMD and WSL terminals, basic authorized network diagnostics, file browsing, Git status/log/branch inspection, system information and a package manager.
 
-The remaining specialist workspaces are present as dedicated module foundations with capability and dependency information. They are not yet represented as completed tool suites. They will be implemented and tested in subsequent development milestones.
+The Plugin & Software Manager currently provides a curated catalogue for Git, Visual Studio Code, Python, Node.js, Docker Desktop, Ubuntu on WSL, Nmap and Wireshark. It checks for installed packages and offers install, update, reinstall and uninstall actions through Windows Package Manager (winget). Package operations require user confirmation and display completion or failure details.
+
+Build Apps checks for template dependencies. When a supported dependency is missing, EVILWARE asks before invoking winget; declining leaves the project files intact. Some toolchains (for example, a C++ compiler) still require separate setup and are explained to the user. Windows Package Manager is supplied by Microsoft's App Installer.
+
+The remaining specialist workspaces are dedicated module foundations with capability and dependency information. They are not yet completed tool suites. See [the release roadmap](docs/RELEASE_ROADMAP.md) for milestones and release gates.
 
 ## Build and package
 
-Every push to `main` starts the Windows x64 GitHub Actions workflow. It builds EVILWARE, deploys Qt runtime files, creates the installer and portable ZIP. Download the `EVILWARE-Unholy-Core-3-Windows-x64` artifact from a successful Actions run.
+Every push to `main` starts the Windows x64 GitHub Actions workflow. It builds EVILWARE, deploys Qt runtime files, runs a headless navigation smoke test, creates the Windows installer and packages a portable ZIP. Download the `EVILWARE-Unholy-Core-3-Windows-x64` artifact from a successful Actions run.
 
 ## Security
 
-Use security and network tools only on systems you own or have explicit permission to assess. EVILWARE's security workspaces are intended for defensive research, learning and authorized testing.
+Package operations use exact package identifiers and the configured winget source. Users must confirm installations, updates and removals. Review package publishers and system prompts before approving software installation. Use security and network tools only on systems you own or have explicit permission to assess. EVILWARE's security workspaces are intended for defensive research, learning and authorized testing.
+
+## Release readiness
+
+A successful CI build confirms compilation, the automated navigation check and artifact packaging. It does not, by itself, certify every workspace or replace clean-machine manual testing. Public release requires Windows validation, installer testing, privacy/legal materials, checksums and a trustworthy code-signing/update plan.
 
 ## License
 

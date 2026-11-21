@@ -1,7 +1,8 @@
 #pragma once
 #include <QWidget>
 #include <QString>
-class QLineEdit; class QComboBox; class QLabel; class QPushButton; class QPlainTextEdit; class QProcess;
+#include <QProcess>
+class QLineEdit; class QComboBox; class QLabel; class QPushButton; class QPlainTextEdit;
 class ProjectWidget:public QWidget{
  Q_OBJECT
 public: explicit ProjectWidget(QWidget *parent=nullptr);

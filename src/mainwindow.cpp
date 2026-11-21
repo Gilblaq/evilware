@@ -20,6 +20,7 @@
 #include <QDir>
 #include <QListWidgetItem>
 #include <QSizePolicy>
+#include <QIcon>
 
 MainWindow::MainWindow(QWidget *p):QMainWindow(p){
  setWindowTitle("EVILWARE | The Unholy Core 3");

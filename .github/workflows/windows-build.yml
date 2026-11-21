@@ -35,8 +35,9 @@ jobs:
         env:
           QT_QPA_PLATFORM: offscreen
         run: |
-          & "build/Release/EVILWARE.exe" --self-test
-          if ($LASTEXITCODE -ne 0) { throw "EVILWARE workspace smoke test failed with exit code $LASTEXITCODE" }
+          $test = Start-Process -FilePath "build/Release/EVILWARE.exe" -ArgumentList "--self-test" -Wait -PassThru
+          Write-Host "EVILWARE smoke test exit code: $($test.ExitCode)"
+          if ($test.ExitCode -ne 0) { throw "EVILWARE workspace smoke test failed with exit code $($test.ExitCode)" }
       - name: Install Inno Setup
         run: choco install innosetup --no-progress -y
       - name: Build installer

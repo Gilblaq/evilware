@@ -45,5 +45,5 @@ jobs:
           name: EVILWARE-Unholy-Core-3-Windows-x64
           path: |
             installer-output/EVILWARE-Unholy-Core-3-x64.exe
-            NEXUS-Windows-x64-Portable.zip
+            EVILWARE-Unholy-Core-3-Windows-x64-Portable.zip
           if-no-files-found: error

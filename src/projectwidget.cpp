@@ -15,6 +15,7 @@
 #include <QStandardPaths>
 #include <QRegularExpression>
 #include <QPlainTextEdit>
+#include <QTextCursor>
 #include <QDesktopServices>
 #include <QUrl>
 

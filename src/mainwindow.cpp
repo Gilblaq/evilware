@@ -28,7 +28,7 @@ MainWindow::MainWindow(QWidget *p):QMainWindow(p){
  setWindowIcon(QIcon());
  resize(1440,900);
  setMinimumSize(1050,680);
- auto *root=new SkullBackdrop;root->setObjectName("appRoot");
+ auto *root=new QWidget;root->setObjectName("appRoot");
  auto *outer=new QHBoxLayout(root);outer->setContentsMargins(0,0,0,0);outer->setSpacing(0);
  auto *sidebar=new QFrame;sidebar->setObjectName("sidebar");sidebar->setFixedWidth(258);
  auto *side=new QVBoxLayout(sidebar);side->setContentsMargins(18,20,18,16);side->setSpacing(8);
@@ -81,7 +81,7 @@ MainWindow::MainWindow(QWidget *p):QMainWindow(p){
 
  connect(nav,&QListWidget::currentRowChanged,this,&MainWindow::showPage);nav->setCurrentRow(0);
  setStyleSheet(R"(
- QMainWindow,QWidget#appRoot,QWidget#mainArea{background:transparent;color:#e7ebf1;font-family:"Segoe UI",Arial;font-size:10pt}
+ QMainWindow,QWidget#mainArea{background:transparent;color:#e7ebf1;font-family:"Segoe UI",Arial;font-size:10pt}\n QWidget#appRoot{background:#0d1117;color:#e7ebf1}
  QFrame#sidebar{background:#11151b;border-right:1px solid #2a3039}
  QLabel#brandMark{background:#a90014;color:white;font-size:23px;font-weight:700;border-radius:9px;min-width:42px;max-width:42px;min-height:42px;max-height:42px;qproperty-alignment:AlignCenter}
  QLabel#brandName{color:#f5f7fa;font-size:20px;font-weight:700;letter-spacing:1px}

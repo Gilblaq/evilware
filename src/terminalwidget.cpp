@@ -25,6 +25,7 @@ TerminalWidget::TerminalWidget(QWidget *p):QWidget(p),proc(new QProcess(this)) {
  connect(proc,qOverload<int,QProcess::ExitStatus>(&QProcess::finished),this,&TerminalWidget::processEnded);
  startShell();
 }
+void TerminalWidget::setShellIndex(int index){ if(index>=0 && index<shell->count()) shell->setCurrentIndex(index); }
 void TerminalWidget::append(const QString &t){ output->moveCursor(QTextCursor::End); output->insertPlainText(t); output->moveCursor(QTextCursor::End); }
 void TerminalWidget::startShell(){
  if(proc->state()!=QProcess::NotRunning) proc->kill();

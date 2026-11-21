@@ -8,7 +8,6 @@ class ProjectWidget;
 class CyberLabWidget;
 class PluginStoreWidget;
 class QLabel;
-
 class MainWindow : public QMainWindow {
  Q_OBJECT
 public:
@@ -16,7 +15,8 @@ public:
 private:
  QStackedWidget *pages;
  QListWidget *nav;
- TerminalWidget *terminal;
+ TerminalWidget *windowsTerminal;
+ TerminalWidget *linuxTerminal;
  EditorWidget *editor;
  ProjectWidget *projects;
  CyberLabWidget *cyber;

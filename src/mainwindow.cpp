@@ -4,6 +4,7 @@
 #include "projectwidget.h"
 #include "cyberlabwidget.h"
 #include "pluginstorewidget.h"
+#include "modulepage.h"
 #include "systeminfo.h"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -21,83 +22,62 @@
 #include <QSizePolicy>
 
 MainWindow::MainWindow(QWidget *p):QMainWindow(p){
- setWindowTitle("NEXUS | Developer Workspace");
- resize(1360,860);
- setMinimumSize(980,640);
-
- auto *root=new QWidget;
- root->setObjectName("appRoot");
- auto *outer=new QHBoxLayout(root);
- outer->setContentsMargins(0,0,0,0);
- outer->setSpacing(0);
-
- auto *sidebar=new QFrame;
- sidebar->setObjectName("sidebar");
- sidebar->setFixedWidth(248);
- auto *side=new QVBoxLayout(sidebar);
- side->setContentsMargins(18,20,18,16);
- side->setSpacing(10);
-
+ setWindowTitle("EVILWARE | The Unholy Core 3");
+ setWindowIcon(QIcon());
+ resize(1440,900);
+ setMinimumSize(1050,680);
+ auto *root=new QWidget;root->setObjectName("appRoot");
+ auto *outer=new QHBoxLayout(root);outer->setContentsMargins(0,0,0,0);outer->setSpacing(0);
+ auto *sidebar=new QFrame;sidebar->setObjectName("sidebar");sidebar->setFixedWidth(258);
+ auto *side=new QVBoxLayout(sidebar);side->setContentsMargins(18,20,18,16);side->setSpacing(8);
  auto *brandRow=new QHBoxLayout;
- auto *mark=new QLabel("N");
- mark->setObjectName("brandMark");
+ auto *mark=new QLabel("E");mark->setObjectName("brandMark");
  auto *brandText=new QVBoxLayout;
- auto *brand=new QLabel("NEXUS");
- brand->setObjectName("brandName");
- auto *tagline=new QLabel("DEVELOPER WORKSPACE");
- tagline->setObjectName("brandCaption");
- brandText->addWidget(brand);brandText->addWidget(tagline);
- brandRow->addWidget(mark);brandRow->addLayout(brandText);brandRow->addStretch();
- side->addLayout(brandRow);
- auto *workspace=new QLabel("PERSONAL WORKSPACE");
- workspace->setObjectName("sectionCaption");
- workspace->setContentsMargins(4,20,0,6);
- side->addWidget(workspace);
-
- nav=new QListWidget;
- nav->setObjectName("mainNavigation");
- nav->setFrameShape(QFrame::NoFrame);
- nav->setSpacing(4);
- const QStringList items={"Dashboard","Build Apps","Code Studio","Terminal","Cyber Lab","Plugin Store","File Explorer","Git Manager","Settings"};
- for(const QString &name:items){auto *item=new QListWidgetItem(name);item->setSizeHint(QSize(190,42));nav->addItem(item);}
+ auto *brand=new QLabel("EVILWARE");brand->setObjectName("brandName");
+ auto *tagline=new QLabel("THE UNHOLY CORE 3");tagline->setObjectName("brandCaption");
+ brandText->addWidget(brand);brandText->addWidget(tagline);brandRow->addWidget(mark);brandRow->addLayout(brandText);brandRow->addStretch();side->addLayout(brandRow);
+ auto *workspace=new QLabel("WORKSPACE");workspace->setObjectName("sectionCaption");workspace->setContentsMargins(4,20,0,6);side->addWidget(workspace);
+ nav=new QListWidget;nav->setObjectName("mainNavigation");nav->setFrameShape(QFrame::NoFrame);nav->setSpacing(3);
+ const QStringList items={"Dashboard","Build Apps","Code Studio","Linux Terminal","Windows Terminal","Cyber Lab","Network Tools","Web Security","Digital Forensics","Reverse Engineering","Database Studio","AI Lab","Docker & DevOps","Cloud Manager","File Manager","Git Manager","Plugin Store","System Monitor","Settings","Documentation"};
+ for(const QString &name:items){auto *item=new QListWidgetItem(name);item->setSizeHint(QSize(205,39));nav->addItem(item);}
  side->addWidget(nav,1);
- auto *footer=new QLabel("NEXUS CORE  ·  v1.1");
- footer->setObjectName("sidebarFooter");
- side->addWidget(footer);
-
- auto *mainArea=new QWidget;
- mainArea->setObjectName("mainArea");
- auto *mainLayout=new QVBoxLayout(mainArea);
- mainLayout->setContentsMargins(0,0,0,0);
- mainLayout->setSpacing(0);
- auto *topbar=new QFrame;topbar->setObjectName("topbar");topbar->setFixedHeight(66);
- auto *top=new QHBoxLayout(topbar);top->setContentsMargins(26,0,26,0);
+ auto *footer=new QLabel("EVILWARE  ·  THE UNHOLY CORE 3");footer->setObjectName("sidebarFooter");side->addWidget(footer);
+ auto *mainArea=new QWidget;mainArea->setObjectName("mainArea");auto *mainLayout=new QVBoxLayout(mainArea);mainLayout->setContentsMargins(0,0,0,0);mainLayout->setSpacing(0);
+ auto *topbar=new QFrame;topbar->setObjectName("topbar");topbar->setFixedHeight(66);auto *top=new QHBoxLayout(topbar);top->setContentsMargins(26,0,26,0);
  activePage=new QLabel("Dashboard");activePage->setObjectName("topbarTitle");
- auto *workspaceLabel=new QLabel("Personal workspace");workspaceLabel->setObjectName("mutedText");
- top->addWidget(activePage);top->addStretch();top->addWidget(workspaceLabel);
- mainLayout->addWidget(topbar);
+ auto *workspaceLabel=new QLabel("THE UNHOLY CORE 3  /  LOCAL WORKSPACE");workspaceLabel->setObjectName("mutedText");top->addWidget(activePage);top->addStretch();top->addWidget(workspaceLabel);mainLayout->addWidget(topbar);
+ pages=new QStackedWidget;pages->setObjectName("pageStack");mainLayout->addWidget(pages,1);outer->addWidget(sidebar);outer->addWidget(mainArea,1);setCentralWidget(root);
 
- pages=new QStackedWidget;pages->setObjectName("pageStack");mainLayout->addWidget(pages,1);
- outer->addWidget(sidebar);outer->addWidget(mainArea,1);
- setCentralWidget(root);
+ windowsTerminal=new TerminalWidget;windowsTerminal->setShellIndex(0);
+ linuxTerminal=new TerminalWidget;linuxTerminal->setShellIndex(2);
+ editor=new EditorWidget;projects=new ProjectWidget;cyber=new CyberLabWidget;plugins=new PluginStoreWidget;
+ addPage(dashboard());                         // 01 Dashboard
+ addPage(projects);                             // 02 Build Apps
+ addPage(editor);                               // 03 Code Studio
+ addPage(linuxTerminal);                        // 04 Linux Terminal
+ addPage(windowsTerminal);                      // 05 Windows Terminal
+ addPage(cyber);                                // 06 Cyber Lab
+ auto addModule=[this](const QString &name,const QString &desc,const QStringList &caps,const QStringList &deps,const QString &state){
+  auto *page=new ModulePage(name,desc,caps,deps,state);
+  connect(page,&ModulePage::openPluginStoreRequested,this,[this]{nav->setCurrentRow(16);});
+  addPage(page);
+ };
+ addModule("Network Tools","Network discovery and troubleshooting workspace for networks you own or are authorized to assess.",{"DNS and host lookup workflows","Ping, route and interface diagnostics","Network inventory and service visibility (authorized scope)"},{"Nmap","Wireshark","Npcap"},"FOUNDATION / IN DEVELOPMENT"); // 07
+ addModule("Web Security","A controlled web application security testing workspace for your own applications and approved test targets.",{"HTTP request inspection","TLS and security-header checks","Safe test plans and findings notes"},{"OWASP ZAP","Burp Suite Community","Browser developer tools"},"FOUNDATION / IN DEVELOPMENT"); // 08
+ addModule("Digital Forensics","Evidence-handling workspace for lawful incident response and forensic learning.",{"Case notes and evidence register","File hash calculation and verification","Timeline and artifact review workflows"},{"Autopsy","FTK Imager","Python"},"FOUNDATION / IN DEVELOPMENT"); // 09
+ addModule("Reverse Engineering","Binary inspection and software analysis workspace for authorized research.",{"File metadata and hash inspection","Strings and PE metadata workflows","Disassembly and debugging tool launch points"},{"Ghidra","x64dbg","Detect It Easy"},"FOUNDATION / IN DEVELOPMENT"); // 10
+ addModule("Database Studio","Database connection and query workspace for development and administration.",{"Connection profiles (planned)","SQL editor and query execution (planned)","Schema browsing and export (planned)"},{"SQLite","PostgreSQL","MySQL / MariaDB"},"FOUNDATION / IN DEVELOPMENT"); // 11
+ addModule("AI Lab","Local and hosted AI development workspace with model and API integrations.",{"Model endpoint configuration (planned)","Prompt and chat workbench (planned)","Local model runtime integration (planned)"},{"Ollama","Python","API provider credentials"},"FOUNDATION / IN DEVELOPMENT"); // 12
+ addModule("Docker & DevOps","Container, build and delivery workspace for software projects.",{"Docker environment checks","Container and image workflows (planned)","Compose and CI/CD helpers (planned)"},{"Docker Desktop","WSL 2","Git"},"FOUNDATION / IN DEVELOPMENT"); // 13
+ addModule("Cloud Manager","A unified place to configure and work with cloud provider command-line tools.",{"Provider profile management (planned)","CLI status and account checks (planned)","Deployment workflow helpers (planned)"},{"Azure CLI","AWS CLI","Google Cloud CLI"},"FOUNDATION / IN DEVELOPMENT"); // 14
+ addPage(filePage());                           // 15 File Manager
+ addPage(gitPage());                            // 16 Git Manager
+ addPage(plugins);                              // 17 Plugin Store
+ addModule("System Monitor","Live view of local system resources and application processes.",{"Operating system and hardware summary","Live CPU and memory charts (next implementation step)","Process inspection and resource history (planned)"},{"Windows performance counters","PowerShell"},"BASIC SYSTEM SUMMARY AVAILABLE"); // 18
+ addPage(settingsPage());                       // 19 Settings
+ addModule("Documentation","Product guides, module references, setup instructions and troubleshooting.",{"Build and installation guide","Module status and dependency references","User documentation and release notes (planned)"},{"EVILWARE documentation","Plugin Store"},"DOCUMENTATION FOUNDATION"); // 20
 
- terminal=new TerminalWidget;
- editor=new EditorWidget;
- projects=new ProjectWidget;
- cyber=new CyberLabWidget;
- plugins=new PluginStoreWidget;
- addPage(dashboard());
- addPage(projects);
- addPage(editor);
- addPage(terminal);
- addPage(cyber);
- addPage(plugins);
- addPage(filePage());
- addPage(gitPage());
- addPage(settingsPage());
- connect(nav,&QListWidget::currentRowChanged,this,&MainWindow::showPage);
- nav->setCurrentRow(0);
-
+ connect(nav,&QListWidget::currentRowChanged,this,&MainWindow::showPage);nav->setCurrentRow(0);
  setStyleSheet(R"(
  QMainWindow,QWidget#appRoot,QWidget#mainArea{background:#101318;color:#e7ebf1;font-family:"Segoe UI",Arial;font-size:10pt}
  QFrame#sidebar{background:#171b21;border-right:1px solid #2a3039}
@@ -105,7 +85,7 @@ MainWindow::MainWindow(QWidget *p):QMainWindow(p){
  QLabel#brandName{color:#f5f7fa;font-size:20px;font-weight:700;letter-spacing:1px}
  QLabel#brandCaption,QLabel#sectionCaption,QLabel#sidebarFooter{color:#7f8a99;font-size:8pt;letter-spacing:1px}
  QListWidget#mainNavigation{background:transparent;color:#aeb8c6;border:0;font-size:10pt;outline:0}
- QListWidget#mainNavigation::item{padding:10px 12px;border-radius:7px}
+ QListWidget#mainNavigation::item{padding:9px 12px;border-radius:7px}
  QListWidget#mainNavigation::item:hover{background:#222a35;color:#f4f7fb}
  QListWidget#mainNavigation::item:selected{background:#253b5b;color:#ffffff;border-left:3px solid #4b8df8;padding-left:9px}
  QFrame#topbar{background:#171b21;border-bottom:1px solid #2a3039}
@@ -129,49 +109,30 @@ MainWindow::MainWindow(QWidget *p):QMainWindow(p){
  QScrollBar::add-line:vertical,QScrollBar::sub-line:vertical{height:0}
  )");
 }
-
 void MainWindow::addPage(QWidget *page){pages->addWidget(page);}
-void MainWindow::showPage(int row){
- if(row<0||row>=pages->count())return;
- pages->setCurrentIndex(row);
- QString name=nav->item(row)->text();
- activePage->setText(name); 
-}
-
+void MainWindow::showPage(int row){if(row<0||row>=pages->count())return;pages->setCurrentIndex(row);activePage->setText(nav->item(row)->text());}
 QWidget* MainWindow::dashboard(){
  auto *w=new QWidget;auto *v=new QVBoxLayout(w);v->setContentsMargins(28,26,28,28);v->setSpacing(18);
- auto *title=new QLabel("Welcome to NEXUS");title->setObjectName("pageTitle");v->addWidget(title);
- auto *sub=new QLabel("Your development tools, projects and system integrations in one workspace.");sub->setObjectName("mutedText");v->addWidget(sub);
- auto s=readSystemInfo();
- auto *grid=new QGridLayout;grid->setSpacing(12);
- QStringList labels={"Operating system","Architecture","Device","Processor","Memory","Application"};
- QStringList values={s.os,s.architecture,s.host,s.cpu,s.memory,s.appVersion};
- for(int i=0;i<labels.size();++i){
-  auto *card=new QFrame;card->setObjectName("infoCard");auto *l=new QVBoxLayout(card);l->setContentsMargins(16,14,16,14);
-  auto *a=new QLabel(labels[i]);a->setObjectName("mutedText");auto *b=new QLabel(values[i]);b->setStyleSheet("font-size:13pt;font-weight:600;color:#f0f3f7");b->setWordWrap(true);l->addWidget(a);l->addWidget(b);grid->addWidget(card,i/3,i%3);
- }
+ auto *title=new QLabel("Welcome to EVILWARE");title->setObjectName("pageTitle");v->addWidget(title);
+ auto *sub=new QLabel("The Unholy Core 3 — your development, systems and security workspaces in one desktop command centre.");sub->setObjectName("mutedText");sub->setWordWrap(true);v->addWidget(sub);
+ auto s=readSystemInfo();auto *grid=new QGridLayout;grid->setSpacing(12);
+ QStringList labels={"Operating system","Architecture","Device","Processor","Memory","Edition"};
+ QStringList values={s.os,s.architecture,s.host,s.cpu,s.memory,"The Unholy Core 3"};
+ for(int i=0;i<labels.size();++i){auto *card=new QFrame;card->setObjectName("infoCard");auto *l=new QVBoxLayout(card);l->setContentsMargins(16,14,16,14);auto *a=new QLabel(labels[i]);a->setObjectName("mutedText");auto *b=new QLabel(values[i]);b->setStyleSheet("font-size:13pt;font-weight:600;color:#f0f3f7");b->setWordWrap(true);l->addWidget(a);l->addWidget(b);grid->addWidget(card,i/3,i%3);}
  v->addLayout(grid);
- auto *section=new QLabel("Workspace");section->setObjectName("pageTitle");section->setStyleSheet("font-size:16pt;font-weight:600");v->addWidget(section);
- auto *modules=new QGridLayout;modules->setSpacing(12);
- const QStringList names={"Build Apps","Code Studio","Terminals","Cyber Lab","Plugin Store","Git Manager"};
- const QStringList desc={"Create starter projects for popular languages and web apps.","Open, edit and save source files on this computer.","Use PowerShell, Command Prompt or WSL.","Run basic network diagnostics on authorized systems.","Install and connect optional developer tools.","Inspect branches, commits and working-tree status."};
- for(int i=0;i<names.size();++i){auto *card=new QFrame;card->setObjectName("infoCard");auto *l=new QVBoxLayout(card);l->setContentsMargins(16,14,16,14);auto *a=new QLabel(names[i]);a->setObjectName("cardTitle");auto *b=new QLabel(desc[i]);b->setObjectName("mutedText");b->setWordWrap(true);l->addWidget(a);l->addWidget(b);modules->addWidget(card,i/3,i%3);}
- v->addLayout(modules);v->addStretch();return w;
+ auto *section=new QLabel("All workspaces");section->setObjectName("pageTitle");section->setStyleSheet("font-size:16pt;font-weight:600");v->addWidget(section);
+ auto *list=new QLabel("20 dedicated sections are available in the navigation. Existing working tools include project creation, source editing, local terminals, basic network diagnostics, file browsing, Git commands and the plugin installer. Other workspaces are being implemented and are clearly marked.");list->setObjectName("bodyText");list->setWordWrap(true);v->addWidget(list);v->addStretch();return w;
 }
 QWidget* MainWindow::filePage(){
- auto *w=new QWidget;auto *v=new QVBoxLayout(w);v->setContentsMargins(24,20,24,20);
- auto *title=new QLabel("File Explorer");title->setObjectName("pageTitle");v->addWidget(title);
+ auto *w=new QWidget;auto *v=new QVBoxLayout(w);v->setContentsMargins(24,20,24,20);auto *title=new QLabel("File Manager");title->setObjectName("pageTitle");v->addWidget(title);
  auto *model=new QFileSystemModel(w);model->setRootPath(QDir::homePath());auto *tree=new QTreeView;tree->setModel(model);tree->setRootIndex(model->index(QDir::homePath()));tree->setColumnWidth(0,380);v->addWidget(tree,1);return w;
 }
 QWidget* MainWindow::gitPage(){
- auto *w=new QWidget;auto *v=new QVBoxLayout(w);v->setContentsMargins(24,20,24,20);
- auto *title=new QLabel("Git Manager");title->setObjectName("pageTitle");v->addWidget(title);
- auto *label=new QLabel("Run Git commands in a selected working folder.");label->setObjectName("mutedText");v->addWidget(label);
- auto *path=new QLineEdit(QDir::homePath());v->addWidget(path);auto *out=new QPlainTextEdit;out->setReadOnly(true);v->addWidget(out,1);
+ auto *w=new QWidget;auto *v=new QVBoxLayout(w);v->setContentsMargins(24,20,24,20);auto *title=new QLabel("Git Manager");title->setObjectName("pageTitle");v->addWidget(title);
+ auto *label=new QLabel("Run Git commands in a selected working folder.");label->setObjectName("mutedText");v->addWidget(label);auto *path=new QLineEdit(QDir::homePath());v->addWidget(path);auto *out=new QPlainTextEdit;out->setReadOnly(true);v->addWidget(out,1);
  auto *row=new QHBoxLayout;for(QString cmd:{"status","log --oneline -10","branch --all"}){auto *b=new QPushButton("git "+cmd);row->addWidget(b);connect(b,&QPushButton::clicked,w,[path,out,cmd,w]{auto *p=new QProcess(w);p->setWorkingDirectory(path->text());p->start("git",cmd.split(' '));QObject::connect(p,&QProcess::readyReadStandardOutput,[p,out]{out->appendPlainText(QString::fromLocal8Bit(p->readAllStandardOutput()));});QObject::connect(p,&QProcess::readyReadStandardError,[p,out]{out->appendPlainText(QString::fromLocal8Bit(p->readAllStandardError()));});QObject::connect(p,qOverload<int,QProcess::ExitStatus>(&QProcess::finished),p,&QObject::deleteLater);});}v->addLayout(row);return w;
 }
 QWidget* MainWindow::settingsPage(){
- auto *w=new QWidget;auto *v=new QVBoxLayout(w);v->setContentsMargins(24,20,24,20);
- auto *title=new QLabel("Settings");title->setObjectName("pageTitle");v->addWidget(title);
- auto *details=new QLabel("NEXUS Developer Command Centre\nVersion 1.1.0\nTheme: Professional Graphite\nTerminal commands run locally under your Windows user account.\nOptional integrations can be installed from Plugin Store using Windows Package Manager.\nCyber Lab provides basic network diagnostics for authorized testing.");details->setWordWrap(true);details->setObjectName("bodyText");v->addWidget(details);v->addStretch();return w;
+ auto *w=new QWidget;auto *v=new QVBoxLayout(w);v->setContentsMargins(24,20,24,20);auto *title=new QLabel("Settings");title->setObjectName("pageTitle");v->addWidget(title);
+ auto *details=new QLabel("EVILWARE Developer Command Centre\nEdition: The Unholy Core 3\nArchitecture: Windows x64\nTheme: Professional Graphite\nTerminal commands run locally under the signed-in Windows user account.\nExternal tools are installed only after you choose them in Plugin Store.\nSecurity workspaces are intended for authorized testing and defensive research.");details->setWordWrap(true);details->setObjectName("bodyText");v->addWidget(details);v->addStretch();return w;
 }

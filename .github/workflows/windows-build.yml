@@ -30,6 +30,13 @@ jobs:
           New-Item -ItemType Directory -Force -Path dist | Out-Null
           Copy-Item "build/Release/*" dist -Recurse -Force
           Copy-Item README.md dist/README.md -Force
+      - name: Run headless workspace smoke test
+        shell: pwsh
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: |
+          & "build/Release/EVILWARE.exe" --self-test
+          if ($LASTEXITCODE -ne 0) { throw "EVILWARE workspace smoke test failed with exit code $LASTEXITCODE" }
       - name: Install Inno Setup
         run: choco install innosetup --no-progress -y
       - name: Build installer

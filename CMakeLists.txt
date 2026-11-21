@@ -19,6 +19,8 @@ qt_add_executable(EVILWARE WIN32
   src/projectwidget.h
   src/systeminfo.cpp
   src/systeminfo.h
+  src/systemmonitorwidget.cpp
+  src/systemmonitorwidget.h
   src/cyberlabwidget.cpp
   src/cyberlabwidget.h
   src/pluginstorewidget.cpp

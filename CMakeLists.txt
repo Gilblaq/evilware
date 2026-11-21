@@ -25,6 +25,8 @@ qt_add_executable(EVILWARE WIN32
   src/pluginstorewidget.h
   src/modulepage.cpp
   src/modulepage.h
+  src/startupwidget.cpp
+  src/startupwidget.h
 )
 target_link_libraries(EVILWARE PRIVATE Qt6::Widgets)
 if(WIN32)

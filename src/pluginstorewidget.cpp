@@ -53,5 +53,5 @@ void PluginStoreWidget::installTool(const QString &name,const QString &packageId
   QMessageBox::warning(this,"Windows Package Manager unavailable","EVILWARE could not start winget. Update or install App Installer from Microsoft Store, then try again. You can also use the publisher website.");
   return;
  }
- QMessageBox::information(this,"Installation started",name+" installation was handed to Windows Package Manager. Follow any prompts in the installer and restart NEXUS if needed.");
+ QMessageBox::information(this,"Installation started",name+" installation was handed to Windows Package Manager. Follow any prompts in the installer and restart EVILWARE if needed.");
 }

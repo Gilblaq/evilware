@@ -58,7 +58,7 @@ MainWindow::MainWindow(QWidget *p):QMainWindow(p){
  nav->setObjectName("mainNavigation");
  nav->setFrameShape(QFrame::NoFrame);
  nav->setSpacing(4);
- const QStringList items={"Dashboard","Build Apps","Code Studio","Windows Terminal","Linux Terminal","Cyber Lab","Network Diagnostics","Plugin Store","File Explorer","Git Manager","Settings"};
+ const QStringList items={"Dashboard","Build Apps","Code Studio","Terminal","Cyber Lab","Plugin Store","File Explorer","Git Manager","Settings"};
  for(const QString &name:items){auto *item=new QListWidgetItem(name);item->setSizeHint(QSize(190,42));nav->addItem(item);}
  side->addWidget(nav,1);
  auto *footer=new QLabel("NEXUS CORE  ·  v1.1");
@@ -90,8 +90,6 @@ MainWindow::MainWindow(QWidget *p):QMainWindow(p){
  addPage(projects);
  addPage(editor);
  addPage(terminal);
- addPage(terminal);
- addPage(cyber);
  addPage(cyber);
  addPage(plugins);
  addPage(filePage());
@@ -137,11 +135,7 @@ void MainWindow::showPage(int row){
  if(row<0||row>=pages->count())return;
  pages->setCurrentIndex(row);
  QString name=nav->item(row)->text();
- if(row==3)name="Windows Terminal";
- if(row==4)name="Linux Terminal";
- if(row==6)name="Network Diagnostics";
- activePage->setText(name);
- if(row==4)terminal->findChild<QComboBox*>(); 
+ activePage->setText(name); 
 }
 
 QWidget* MainWindow::dashboard(){

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(NEXUSDeveloperCommandCentre VERSION 1.0.0 LANGUAGES CXX)
+project(EVILWARE VERSION 3.0.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
@@ -7,7 +7,7 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 find_package(Qt6 6.5 REQUIRED COMPONENTS Widgets)
 qt_standard_project_setup()
-qt_add_executable(NEXUS WIN32
+qt_add_executable(EVILWARE WIN32
   src/main.cpp
   src/mainwindow.cpp
   src/mainwindow.h
@@ -23,9 +23,11 @@ qt_add_executable(NEXUS WIN32
   src/cyberlabwidget.h
   src/pluginstorewidget.cpp
   src/pluginstorewidget.h
+  src/modulepage.cpp
+  src/modulepage.h
 )
-target_link_libraries(NEXUS PRIVATE Qt6::Widgets)
+target_link_libraries(EVILWARE PRIVATE Qt6::Widgets)
 if(WIN32)
-  target_link_libraries(NEXUS PRIVATE psapi)
+  target_link_libraries(EVILWARE PRIVATE psapi)
 endif()
-install(TARGETS NEXUS RUNTIME DESTINATION .)
+install(TARGETS EVILWARE RUNTIME DESTINATION .)

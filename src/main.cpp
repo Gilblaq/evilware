@@ -4,6 +4,10 @@
 #include <QFont>
 #include <QGuiApplication>
 #include <QScreen>
+#include <QListWidget>
+#include <QStackedWidget>
+#include <QDebug>
+
 int main(int argc,char *argv[]){
  QApplication app(argc,argv);
  QApplication::setApplicationName("EVILWARE");
@@ -11,6 +15,34 @@ int main(int argc,char *argv[]){
  QApplication::setApplicationVersion("3.0.0");
  app.setStyle("Fusion");
  app.setFont(QFont("Segoe UI",10));
+
+ // Headless CI smoke test: construct the real workspace and verify that all
+ // 20 navigation entries map to 20 distinct pages without showing a window.
+ if(app.arguments().contains("--self-test")){
+  MainWindow testWindow;
+  auto *navigation=testWindow.findChild<QListWidget*>("mainNavigation");
+  auto *pageStack=testWindow.findChild<QStackedWidget*>("pageStack");
+  if(!navigation || !pageStack){
+   qCritical() << "SELF-TEST FAILED: workspace navigation or page stack is missing";
+   return 2;
+  }
+  if(navigation->count()!=20 || pageStack->count()!=20){
+   qCritical() << "SELF-TEST FAILED: expected 20 navigation entries and pages; got"
+               << navigation->count() << pageStack->count();
+   return 3;
+  }
+  for(int i=0;i<20;++i){
+   navigation->setCurrentRow(i);
+   if(pageStack->currentIndex()!=i){
+    qCritical() << "SELF-TEST FAILED: navigation entry" << i
+                << "did not select its matching page";
+    return 4;
+   }
+  }
+  qInfo() << "SELF-TEST PASSED: all 20 workspaces construct and navigation maps correctly";
+  return 0;
+ }
+
  MainWindow *workspace=nullptr;
  AccessScreen access;
  SplashScreen splash;

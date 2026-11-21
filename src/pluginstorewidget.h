@@ -2,6 +2,7 @@
 #include <QWidget>
 class QLineEdit;
 class QVBoxLayout;
+class QLabel;
 class PluginStoreWidget : public QWidget {
  Q_OBJECT
 public:
@@ -10,6 +11,8 @@ private:
  QLineEdit *search;
  QWidget *listHost;
  QVBoxLayout *listLayout;
+ QLabel *status;
  void rebuild(const QString &filter={});
- void installTool(const QString &name,const QString &packageId);
+ void checkTool(const QString &name,const QString &packageId);
+ void runPackageAction(const QString &name,const QString &packageId,const QString &action);
 };

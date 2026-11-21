@@ -1,37 +1,51 @@
-# NEXUS Developer Command Centre
+# EVILWARE — The Unholy Core 3
 
-NEXUS is a native Windows desktop workspace built with C++20 and Qt 6. It brings everyday development tools into one dark, keyboard-friendly application.
+EVILWARE is a native Windows x64 developer command centre built with C++20 and Qt 6. The Unholy Core 3 edition presents 20 dedicated workspaces in a professional graphite interface.
 
-## Included in this build
+## 20 workspaces
 
-- **Overview:** operating system, architecture, host, processor-thread count and memory summary.
-- **Build Apps:** create real starter projects for C++/CMake, Python and HTML/CSS/JavaScript.
-- **Code Studio:** open, edit and save local text/source files.
-- **Terminal:** run a local PowerShell, Command Prompt or optional WSL shell as the signed-in Windows user.
-- **Cyber Lab:** basic ping, DNS, route-trace and local network-configuration diagnostics for authorized testing.
-- **File Explorer:** browse the current user's home folder.
-- **Git Manager:** run Git status, recent log and branch listing in a selected working directory.
+1. Dashboard
+2. Build Apps
+3. Code Studio
+4. Linux Terminal
+5. Windows Terminal
+6. Cyber Lab
+7. Network Tools
+8. Web Security
+9. Digital Forensics
+10. Reverse Engineering
+11. Database Studio
+12. AI Lab
+13. Docker & DevOps
+14. Cloud Manager
+15. File Manager
+16. Git Manager
+17. Plugin Store
+18. System Monitor
+19. Settings
+20. Documentation
 
-## Windows build
+## Implemented tools in this foundation build
 
-Every push to `main` starts the Windows x64 GitHub Actions workflow. The workflow builds the Qt application, deploys the required Qt runtime files and creates:
+- Dashboard: operating system, architecture, host, processor and memory summary.
+- Build Apps: starter project generation for C++/CMake, Python and HTML/CSS/JavaScript.
+- Code Studio: open, edit and save local source/text files.
+- Linux Terminal: WSL shell launch (requires WSL).
+- Windows Terminal: PowerShell, Command Prompt and WSL shell selector.
+- Cyber Lab: basic ping, DNS, route trace and local network configuration diagnostics for authorized testing.
+- File Manager: browse the current user's home folder.
+- Git Manager: status, recent log and branch listing in a selected folder.
+- Plugin Store: initial catalogue with winget installation handoff for Git, VS Code, Python, Node.js, Docker Desktop, Ubuntu WSL, Nmap and Wireshark.
 
-- `NEXUS-Setup-x64.exe` — Windows installer.
-- `NEXUS-Windows-x64-Portable.zip` — portable application folder.
+The remaining specialist workspaces are present as dedicated module foundations with capability and dependency information. They are not yet represented as completed tool suites. They will be implemented and tested in subsequent development milestones.
 
-Open the repository's **Actions** tab, select **NEXUS Windows x64 Build**, then download the artifact from a successful run. See [docs/BUILDING.md](docs/BUILDING.md) for local build requirements.
+## Build and package
 
-## Optional dependencies
+Every push to `main` starts the Windows x64 GitHub Actions workflow. It builds EVILWARE, deploys Qt runtime files, creates the installer and portable ZIP. Download the `EVILWARE-Unholy-Core-3-Windows-x64` artifact from a successful Actions run.
 
-PowerShell and Command Prompt are provided by Windows. WSL and Git must be installed separately to use those integrations. NEXUS does not silently install external tools. A shell runs with the current Windows user's permissions.
+## Security
 
-## Cyber Lab safety
-
-The Cyber Lab is limited to basic network diagnostics. Only assess devices and networks you own or have explicit permission to test. No exploit automation, credential theft, stealth, persistence or destructive attack features are included.
-
-## Current scope
-
-This is the first integrated desktop build. It does not yet include a full IDE language-server/debugger, database administration suite, Docker orchestration, AI model runtime or third-party plugin marketplace. Those require additional modules and integrations; they are not represented as finished features here.
+Use security and network tools only on systems you own or have explicit permission to assess. EVILWARE's security workspaces are intended for defensive research, learning and authorized testing.
 
 ## License
 

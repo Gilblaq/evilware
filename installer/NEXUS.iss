@@ -19,8 +19,8 @@ DisableProgramGroupPage=yes
 Source: "..\dist\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{autoprograms}\NEXUS Developer Command Centre"; Filename: "{app}\EVILWARE.exe"
-Name: "{autodesktop}\NEXUS Developer Command Centre"; Filename: "{app}\NEXUS.exe"; Tasks: desktopicon
+Name: "{autoprograms}\EVILWARE - The Unholy Core 3"; Filename: "{app}\EVILWARE.exe"
+Name: "{autodesktop}\EVILWARE - The Unholy Core 3"; Filename: "{app}\EVILWARE.exe"; Tasks: desktopicon
 
 [Tasks]
 Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription: "Additional shortcuts:"

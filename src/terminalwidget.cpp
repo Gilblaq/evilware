@@ -38,7 +38,7 @@ void TerminalWidget::startShell(){
  program="bash";args={"-l"};
 #endif
  proc->setWorkingDirectory(QDir::homePath()); proc->start(program,args);
- status->setText("Starting…"); append("\n[NEXUS] Starting "+program+"\n");
+ status->setText("Starting…"); append("\n[EVILWARE] Starting "+program+"\n");
 }
 void TerminalWidget::sendCommand(){
  const QString cmd=input->text().trimmed(); if(cmd.isEmpty())return;

@@ -1,9 +1,12 @@
 #pragma once
 #include <QWidget>
-class QPlainTextEdit; class QLabel;
+#include <QString>
+class QPlainTextEdit; class QLabel; class QSyntaxHighlighter;
 class EditorWidget:public QWidget{
  Q_OBJECT
 public: explicit EditorWidget(QWidget *parent=nullptr);
-private slots: void openFile(); void saveFile(); void saveAs();
-private: QPlainTextEdit *edit; QLabel *pathLabel; QString currentPath; bool writeFile(const QString&);
+private slots: void newFile(); void openFile(); void saveFile(); void saveAs();
+private:
+ QPlainTextEdit *edit; QLabel *pathLabel; QLabel *statusLabel; QString currentPath; bool writeFile(const QString&); bool maybeSave(); void updateStatus(); void applyLanguageHighlighting();
+ QSyntaxHighlighter *highlighter=nullptr;
 };

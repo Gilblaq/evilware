@@ -21,6 +21,8 @@ qt_add_executable(NEXUS WIN32
   src/systeminfo.h
   src/cyberlabwidget.cpp
   src/cyberlabwidget.h
+  src/pluginstorewidget.cpp
+  src/pluginstorewidget.h
 )
 target_link_libraries(NEXUS PRIVATE Qt6::Widgets)
 if(WIN32)

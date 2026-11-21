@@ -26,7 +26,7 @@ static const PluginInfo plugins[] = {
 PluginStoreWidget::PluginStoreWidget(QWidget *parent):QWidget(parent){
  auto *root=new QVBoxLayout(this);root->setContentsMargins(24,20,24,24);root->setSpacing(14);
  auto *title=new QLabel("Plugin Store");title->setObjectName("pageTitle");root->addWidget(title);
- auto *intro=new QLabel("Add trusted developer tools and connect them to your NEXUS workspace. Installations are performed by Windows Package Manager (winget).");intro->setWordWrap(true);intro->setObjectName("mutedText");root->addWidget(intro);
+ auto *intro=new QLabel("Add trusted developer tools and connect them to your EVILWARE workspace. Installations are performed by Windows Package Manager (winget).");intro->setWordWrap(true);intro->setObjectName("mutedText");root->addWidget(intro);
  search=new QLineEdit;search->setPlaceholderText("Search tools and integrations…");root->addWidget(search);
  auto *hint=new QLabel("Install buttons run winget on this PC. Review each tool's publisher and license before installing. Some tools require administrator approval or a restart.");hint->setWordWrap(true);hint->setObjectName("mutedText");root->addWidget(hint);
  auto *scroll=new QScrollArea;scroll->setWidgetResizable(true);scroll->setFrameShape(QFrame::NoFrame);
@@ -50,7 +50,7 @@ void PluginStoreWidget::rebuild(const QString &filter){
 }
 void PluginStoreWidget::installTool(const QString &name,const QString &packageId){
  if(!QProcess::startDetached("winget",{"install","--id",packageId,"--exact","--source","winget","--accept-package-agreements","--accept-source-agreements"})){
-  QMessageBox::warning(this,"Windows Package Manager unavailable","NEXUS could not start winget. Update or install App Installer from Microsoft Store, then try again. You can also use the publisher website.");
+  QMessageBox::warning(this,"Windows Package Manager unavailable","EVILWARE could not start winget. Update or install App Installer from Microsoft Store, then try again. You can also use the publisher website.");
   return;
  }
  QMessageBox::information(this,"Installation started",name+" installation was handed to Windows Package Manager. Follow any prompts in the installer and restart NEXUS if needed.");

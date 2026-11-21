@@ -11,7 +11,7 @@ int main(int argc,char *argv[]){
  QApplication::setApplicationVersion("3.0.0");
  app.setStyle("Fusion");
  app.setFont(QFont("Segoe UI",10));
- MainWindow workspace;
+ MainWindow *workspace=nullptr;
  AccessScreen access;
  SplashScreen splash;
  QObject::connect(&splash,&SplashScreen::finished,&splash,[&]{
@@ -21,13 +21,16 @@ int main(int argc,char *argv[]){
   }
   access.show();
  });
- QObject::connect(&access,&AccessScreen::enterRequested,&workspace,[&](const QString &displayName){
-  workspace.setWindowTitle(QString("EVILWARE | The Unholy Core 3 — %1").arg(displayName));
-  access.hide();workspace.showMaximized();
+ QObject::connect(&access,&AccessScreen::enterRequested,&app,[&](const QString &displayName){
+  if(!workspace)workspace=new MainWindow;
+  workspace->setWindowTitle(QString("EVILWARE | The Unholy Core 3 — %1").arg(displayName));
+  access.hide();workspace->showMaximized();
  });
  if(QScreen *screen=QGuiApplication::primaryScreen()){
   QRect g=screen->availableGeometry();splash.move(g.center()-QPoint(splash.width()/2,splash.height()/2));
  }
  splash.show();
- return app.exec();
+ const int result=app.exec();
+ delete workspace;
+ return result;
 }

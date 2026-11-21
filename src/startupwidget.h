@@ -2,6 +2,7 @@
 #include <QWidget>
 #include <QString>
 class QLineEdit;
+class QLabel;
 class QPushButton;
 class SplashScreen : public QWidget {
  Q_OBJECT

@@ -7,6 +7,7 @@
 #include "modulepage.h"
 #include "startupwidget.h"
 #include "systeminfo.h"
+#include "systemmonitorwidget.h"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QGridLayout>
@@ -75,7 +76,7 @@ MainWindow::MainWindow(QWidget *p):QMainWindow(p){
  addPage(filePage());                           // 15 File Manager
  addPage(gitPage());                            // 16 Git Manager
  addPage(plugins);                              // 17 Plugin Store
- addModule("System Monitor","Live view of local system resources and application processes.",{"Operating system and hardware summary","Live CPU and memory charts (next implementation step)","Process inspection and resource history (planned)"},{"Windows performance counters","PowerShell"},"BASIC SYSTEM SUMMARY AVAILABLE"); // 18
+ addPage(new SystemMonitorWidget);               // 18 — read-only process inspection
  addPage(settingsPage());                       // 19 Settings
  addModule("Documentation","Product guides, module references, setup instructions and troubleshooting.",{"Build and installation guide","Module status and dependency references","User documentation and release notes (planned)"},{"EVILWARE documentation","Plugin Store"},"DOCUMENTATION FOUNDATION"); // 20
 

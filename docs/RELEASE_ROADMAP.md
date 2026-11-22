@@ -10,7 +10,7 @@ This document is the source-of-truth checklist for taking EVILWARE from its curr
 - [x] Core foundations exist for project creation, source editing, local terminals, basic network diagnostics, file browsing, Git commands and package installation handoff.
 - [ ] Specialist workspaces are not all complete; each must be implemented and tested before being advertised as finished.
 
-## Release milestones
+## Recent development\n\n- [x] Added initial local diagnostic actions to specialist modules: network diagnostics, HTTP/TLS header checks, SHA-256 evidence hashing, static file metadata/strings inspection, SQLite table listing, Ollama model commands, Docker inspection and cloud CLI status checks.\n- [x] Added a user guide, security policy and clearly labelled privacy-notice draft.\n- [ ] Integrate the exact user-supplied startup/workspace artwork. The current app still uses drawn splash/access artwork.\n- [ ] Run the latest CI build and resolve any compiler or runtime regressions from the specialist utility work.\n\n## Release milestones
 
 ### 1. Package and dependency management — in progress
 - [x] Curated initial catalogue of developer and security tools.
@@ -25,12 +25,12 @@ This document is the source-of-truth checklist for taking EVILWARE from its curr
 
 ### 2. Core workspace completion
 - [ ] Dashboard actions and recent projects.
-- [ ] System Monitor process inspection and verified resource metrics.
+- [x] System Monitor process inspection and live CPU/physical-memory metrics implemented; CI build passed. Manual Windows 10/11 validation remains required.
 - [ ] Build Apps templates, toolchain checks and build/run workflows.
 - [ ] Code Studio usability, file handling and language support.
 - [ ] Windows and WSL terminal reliability.
 - [ ] Git Manager operations and error handling.
-- [ ] Complete each specialist workspace before marking it production-ready.
+- [ ] Complete each specialist workspace before marking it production-ready. Initial local utilities have been added for Network Tools, Web Security, Digital Forensics, Reverse Engineering, Database Studio, AI Lab, Docker & DevOps and Cloud Manager; these are not complete specialist suites.
 
 ### 3. Security, reliability and privacy
 - [ ] Package source and publisher verification strategy.

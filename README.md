@@ -35,7 +35,7 @@ Build Apps checks for template dependencies. When a supported dependency is miss
 
 The remaining specialist workspaces are dedicated module foundations with capability and dependency information. They are not yet completed tool suites. See [the release roadmap](docs/RELEASE_ROADMAP.md) for milestones and release gates.
 
-## Build and package
+## User and security documentation\n\n- [User Guide](docs/USER_GUIDE.md) describes the implemented functions and known limitations.\n- [Security Policy](SECURITY.md) explains safe use and vulnerability reporting.\n- [Privacy Notice Draft](docs/PRIVACY_NOTICE_DRAFT.md) is an internal drafting aid and is not a final published legal policy.\n- [Release Roadmap](docs/RELEASE_ROADMAP.md) tracks remaining development and release gates.\n\n## Build and package
 
 Every push to `main` starts the Windows x64 GitHub Actions workflow. It builds EVILWARE, deploys Qt runtime files, runs a headless navigation smoke test, creates the Windows installer and packages a portable ZIP. Download the `EVILWARE-Unholy-Core-3-Windows-x64` artifact from a successful Actions run.
 

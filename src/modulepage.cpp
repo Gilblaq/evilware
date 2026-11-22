@@ -14,6 +14,7 @@
 #include <QRegularExpression>
 #include <QDateTime>
 #include <QDir>
+#include <functional>
 
 ModulePage::ModulePage(const QString &name,const QString &description,const QStringList &capabilities,const QStringList &dependencies,const QString &status,QWidget *parent):QWidget(parent){
  auto *root=new QVBoxLayout(this);root->setContentsMargins(28,26,28,26);root->setSpacing(14);

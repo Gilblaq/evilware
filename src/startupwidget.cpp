@@ -24,7 +24,8 @@ static void drawRedFace(QPainter &p,const QRectF &r){
 static void drawSnake(QPainter &p,const QRectF &r,int tick){
  p.save();p.setRenderHint(QPainter::Antialiasing);
  const QPointF c=r.center();const qreal rx=r.width()*.29,ry=r.height()*.31;
- const qreal phase=tick*.035;\n constexpr qreal pi=3.14159265358979323846;
+ const qreal phase=tick*.035;
+ constexpr qreal pi=3.14159265358979323846;
  QPainterPath body;
  for(int i=0;i<=180;i++){
   const qreal a=phase+i*(2*pi/180.0);
@@ -39,14 +40,14 @@ static void drawSnake(QPainter &p,const QRectF &r,int tick){
  // Fine cross-bands give the coil a scaled, segmented surface.
  p.setPen(QPen(QColor(35,0,2,150),1.2));
  for(int i=8;i<175;i+=5){
-  const qreal a=phase+i*(2*M_PI/180.0),w=1.0+.025*qSin(i*.19+phase);
+  const qreal a=phase+i*(2*pi/180.0),w=1.0+.025*qSin(i*.19+phase);
   const QPointF pt(c.x()+rx*w*qCos(a),c.y()+ry*w*qSin(a));
   const QPointF n(qCos(a),qSin(a));
   p.drawLine(pt-n*5,pt+n*5);
  }
  const qreal a=phase;
  const QPointF head(c.x()+rx*qCos(a),c.y()+ry*qSin(a));
- const qreal angle=(a+pi/2.0)*180.0/M_PI;
+ const qreal angle=(a+pi/2.0)*180.0/pi;
  p.translate(head);p.rotate(angle);
  QRadialGradient headShade(-5,-4,24);headShade.setColorAt(0,QColor(255,72,78));headShade.setColorAt(.55,QColor(174,0,12));headShade.setColorAt(1,QColor(48,0,4));
  p.setPen(QPen(QColor(30,0,2),2));p.setBrush(headShade);p.drawEllipse(QRectF(-17,-12,34,24));

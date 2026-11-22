@@ -22,9 +22,38 @@ static void drawRedFace(QPainter &p,const QRectF &r){
  p.restore();
 }
 static void drawSnake(QPainter &p,const QRectF &r,int tick){
- p.save();p.setRenderHint(QPainter::Antialiasing);QPainterPath path;const qreal base=r.bottom()-r.height()*.12;for(int i=0;i<=80;i++){qreal x=r.left()+r.width()*i/80.0; qreal y=base-r.height()*(.055+.035*qSin(i*.17+tick*.055)+.018*qSin(i*.39-tick*.04));if(i==0)path.moveTo(x,y);else path.lineTo(x,y);}
- p.setPen(QPen(QColor(35,0,0,210),r.height()*.045,Qt::SolidLine,Qt::RoundCap,Qt::RoundJoin));p.drawPath(path);p.setPen(QPen(QColor(205,0,12),r.height()*.018,Qt::SolidLine,Qt::RoundCap,Qt::RoundJoin));p.drawPath(path);
- QPointF head(r.right()-r.width()*.06,base-r.height()*(.055+.035*qSin(80*.17+tick*.055)+.018*qSin(80*.39-tick*.04)));QPainterPath h;h.moveTo(head);h.lineTo(head.x()+r.width()*.055,head.y()-r.height()*.025);h.lineTo(head.x()+r.width()*.04,head.y()+r.height()*.03);h.closeSubpath();p.setBrush(QColor(160,0,8));p.setPen(QPen(QColor(255,0,20),2));p.drawPath(h);p.setBrush(QColor(255,30,30));p.drawEllipse(head+QPointF(r.width()*.018,-r.height()*.005),3,3);p.restore();
+ p.save();p.setRenderHint(QPainter::Antialiasing);
+ const QPointF c=r.center();const qreal rx=r.width()*.29,ry=r.height()*.31;
+ const qreal phase=tick*.035;
+ QPainterPath body;
+ for(int i=0;i<=180;i++){
+  const qreal a=phase+i*(2*M_PI/180.0);
+  const qreal wobble=1.0+.025*qSin(i*.19+phase);
+  const QPointF pt(c.x()+rx*wobble*qCos(a),c.y()+ry*wobble*qSin(a));
+  if(i==0)body.moveTo(pt);else body.lineTo(pt);
+ }
+ p.setPen(QPen(QColor(5,0,0,235),r.height()*.052,Qt::SolidLine,Qt::RoundCap,Qt::RoundJoin));p.drawPath(body);
+ QLinearGradient scales(r.left(),r.top(),r.right(),r.bottom());scales.setColorAt(0,QColor(75,0,5));scales.setColorAt(.45,QColor(225,0,18));scales.setColorAt(1,QColor(92,0,8));
+ p.setPen(QPen(QBrush(scales),r.height()*.031,Qt::SolidLine,Qt::RoundCap,Qt::RoundJoin));p.drawPath(body);
+ p.setPen(QPen(QColor(255,75,82,145),r.height()*.006,Qt::SolidLine,Qt::RoundCap));p.drawPath(body);
+ // Fine cross-bands give the coil a scaled, segmented surface.
+ p.setPen(QPen(QColor(35,0,2,150),1.2));
+ for(int i=8;i<175;i+=5){
+  const qreal a=phase+i*(2*M_PI/180.0),w=1.0+.025*qSin(i*.19+phase);
+  const QPointF pt(c.x()+rx*w*qCos(a),c.y()+ry*w*qSin(a));
+  const QPointF n(qCos(a),qSin(a));
+  p.drawLine(pt-n*5,pt+n*5);
+ }
+ const qreal a=phase;
+ const QPointF head(c.x()+rx*qCos(a),c.y()+ry*qSin(a));
+ const qreal angle=(a+M_PI/2.0)*180.0/M_PI;
+ p.translate(head);p.rotate(angle);
+ QRadialGradient headShade(-5,-4,24);headShade.setColorAt(0,QColor(255,72,78));headShade.setColorAt(.55,QColor(174,0,12));headShade.setColorAt(1,QColor(48,0,4));
+ p.setPen(QPen(QColor(30,0,2),2));p.setBrush(headShade);p.drawEllipse(QRectF(-17,-12,34,24));
+ p.setPen(Qt::NoPen);p.setBrush(QColor(255,215,190));p.drawEllipse(QRectF(3,-7,5,5));p.drawEllipse(QRectF(3,3,5,5));
+ p.setBrush(QColor(12,0,0));p.drawEllipse(QRectF(4,-6,2,3));p.drawEllipse(QRectF(4,4,2,3));
+ p.setPen(QPen(QColor(255,30,45),2));p.drawLine(QPointF(16,0),QPointF(27,0));p.drawLine(QPointF(27,0),QPointF(34,-5));p.drawLine(QPointF(27,0),QPointF(34,5));
+ p.restore();
 }
 SplashScreen::SplashScreen(QWidget *parent):QWidget(parent){
  setWindowFlags(Qt::Window|Qt::FramelessWindowHint);setAttribute(Qt::WA_TranslucentBackground,false);setFixedSize(1000,620);

@@ -3,6 +3,8 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QFrame>
+#include <QScrollArea>
+#include <QPixmap>
 #include <QPushButton>
 #include <QLineEdit>
 #include <QPlainTextEdit>
@@ -17,10 +19,16 @@
 #include <functional>
 
 ModulePage::ModulePage(const QString &name,const QString &description,const QStringList &capabilities,const QStringList &dependencies,const QString &status,QWidget *parent):QWidget(parent){
- auto *root=new QVBoxLayout(this);root->setContentsMargins(28,26,28,26);root->setSpacing(14);
+ auto *outer=new QVBoxLayout(this);outer->setContentsMargins(0,0,0,0);outer->setSpacing(0);
+ auto *scroll=new QScrollArea(this);scroll->setWidgetResizable(true);scroll->setFrameShape(QFrame::NoFrame);scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+ auto *content=new QWidget;content->setObjectName("moduleScrollContent");scroll->setWidget(content);outer->addWidget(scroll);
+ auto *root=new QVBoxLayout(content);root->setContentsMargins(28,26,28,28);root->setSpacing(14);
  auto *eyebrow=new QLabel("EVILWARE WORKSPACE MODULE");eyebrow->setObjectName("mutedText");root->addWidget(eyebrow);
  auto *title=new QLabel(name);title->setObjectName("pageTitle");root->addWidget(title);
  auto *intro=new QLabel(description);intro->setObjectName("bodyText");intro->setWordWrap(true);root->addWidget(intro);
+ if(name=="Reverse Engineering"){
+  auto *banner=new QLabel;banner->setObjectName("workspaceArtwork");banner->setPixmap(QPixmap(":/assets/evilware_reverse_engineering_banner.jpg"));banner->setScaledContents(true);banner->setFixedHeight(164);banner->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);root->addWidget(banner);
+ }
  auto *statusCard=new QFrame;statusCard->setObjectName("infoCard");auto *statusLayout=new QHBoxLayout(statusCard);statusLayout->setContentsMargins(16,12,16,12);
  auto *statusLabel=new QLabel("MODULE STATUS");statusLabel->setObjectName("mutedText");
  auto *statusValue=new QLabel(status);statusValue->setObjectName("cardTitle");statusLayout->addWidget(statusLabel);statusLayout->addStretch();statusLayout->addWidget(statusValue);root->addWidget(statusCard);
@@ -45,7 +53,7 @@ ModulePage::ModulePage(const QString &name,const QString &description,const QStr
  auto append=[output](const QString &s){if(!s.isEmpty())output->appendPlainText(s);};
  connect(process,&QProcess::readyReadStandardOutput,this,[process,append]{append(QString::fromLocal8Bit(process->readAllStandardOutput()));});
  connect(process,&QProcess::readyReadStandardError,this,[process,append]{append(QString::fromLocal8Bit(process->readAllStandardError()));});
- connect(process,qOverload<int,QProcess::ExitStatus>(&QProcess::finished),this,[append](int code,QProcess::ExitStatus state){append(QString("\\n[Process %1, exit code %2]").arg(state==QProcess::NormalExit?"finished":"crashed").arg(code));});
+ connect(process,qOverload<int,QProcess::ExitStatus>(&QProcess::finished),this,[append](int code,QProcess::ExitStatus state){append(QString("\n[Process %1, exit code %2]").arg(state==QProcess::NormalExit?"finished":"crashed").arg(code));});
  auto run=[this,process,output,append](const QString &program,const QStringList &args){
   if(process->state()!=QProcess::NotRunning){append("[A command is already running.]");return;}
   output->clear();append("> "+program+" "+args.join(" "));
@@ -109,10 +117,10 @@ ModulePage::ModulePage(const QString &name,const QString &description,const QStr
    if(name=="Digital Forensics")output->appendPlainText("Evidence note: hash recorded for integrity verification. Work on a copy and preserve the original.");
    else{
     output->appendPlainText("Printable-byte estimate: "+QString::number(printable));
-    output->appendPlainText("\\n--- Printable strings (first 100) ---");
+    output->appendPlainText("\n--- Printable strings (first 100) ---");
     const auto matches=QRegularExpression("[ -~]{5,}").globalMatch(QString::fromLatin1(sample));
     int count=0;auto it=matches;while(it.hasNext()&&count<100){output->appendPlainText(it.next().captured());++count;}
-    output->appendPlainText("\\nStatic metadata/string inspection only; no code is executed.");
+    output->appendPlainText("\nStatic metadata/string inspection only; no code is executed.");
    }
   },true);
   addButton("Clear",[output,target]{output->clear();target->clear();});
@@ -121,7 +129,7 @@ ModulePage::ModulePage(const QString &name,const QString &description,const QStr
   addButton("Open SQLite database",[this,target,output,append]{
    QString file=QFileDialog::getOpenFileName(this,"Select SQLite database",QDir::homePath(),"SQLite databases (*.db *.sqlite *.sqlite3);;All files (*.*)");
    if(file.isEmpty())return;target->setText(file);QFileInfo info(file);
-   output->setPlainText("Selected database: "+info.absoluteFilePath()+"\\nSize: "+QString::number(info.size())+" bytes\\n\\nUse the sqlite3 command-line tool to query it. This workspace currently supports read-only query templates only.");
+   output->setPlainText("Selected database: "+info.absoluteFilePath()+"\nSize: "+QString::number(info.size())+" bytes\n\nUse the sqlite3 command-line tool to query it. This workspace currently supports read-only query templates only.");
   },true);
   addButton("List tables (sqlite3)",[run,target,append]{
    const QString file=target->text().trimmed();if(file.isEmpty()){append("Choose a database file first.");return;}

@@ -22,7 +22,7 @@ if(WIN32)
   enable_language(RC)
 endif()
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS Widgets)
+find_package(Qt6 6.5 REQUIRED COMPONENTS Widgets Network)
 qt_standard_project_setup()
 set(EVILWARE_SOURCES
   src/main.cpp
@@ -46,13 +46,15 @@ set(EVILWARE_SOURCES
   src/modulepage.h
   src/startupwidget.cpp
   src/startupwidget.h
+  src/lamiaaiwidget.cpp
+  src/lamiaaiwidget.h
   resources.qrc
 )
 if(WIN32)
   list(APPEND EVILWARE_SOURCES src/evilware.rc)
 endif()
 qt_add_executable(EVILWARE WIN32 ${EVILWARE_SOURCES})
-target_link_libraries(EVILWARE PRIVATE Qt6::Widgets)
+target_link_libraries(EVILWARE PRIVATE Qt6::Widgets Qt6::Network)
 if(WIN32)
   target_link_libraries(EVILWARE PRIVATE psapi crypt32)
 endif()

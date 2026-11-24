@@ -1,6 +1,6 @@
 <RCC>
   <qresource prefix="/assets">
-    <file>assets/evilware_core_banner.png</file>
-    <file>assets/evilware_app_icon.png</file>
+    <file alias="evilware_core_banner.png">assets/evilware_core_banner.png</file>
+    <file alias="evilware_app_icon.png">assets/evilware_app_icon.png</file>
   </qresource>
 </RCC>

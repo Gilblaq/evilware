@@ -62,7 +62,7 @@ void ProjectWidget::createProject(){
  else if(projectKind==1){ok&=put("main.py","def main():\n    print('Hello from "+n+"!')\n\nif __name__ == '__main__':\n    main()\n");}
  else {ok&=put("index.html","<!doctype html>\n<html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>"+n+"</title><link rel=\"stylesheet\" href=\"style.css\"></head><body><main><h1>"+n+"</h1><p>Your project starts here.</p></main><script src=\"app.js\"></script></body></html>\n");ok&=put("style.css","body{font-family:system-ui;margin:3rem;background:#101722;color:#e8f0fa}\n");ok&=put("app.js","console.log('"+n+" ready');\n");}
  if(!ok){message->setText("Project folder created, but one or more files could not be written. Check folder permissions.");return;}
- projectPath=d.absolutePath();buildRunButton->setEnabled(true);output->clear();message->setText("Project created: "+projectPath+" — use Build / Run when ready.");
+ projectPath=d.absolutePath();buildRunButton->setEnabled(true);output->clear();message->setText("Project created: "+projectPath+" — use Build / Run when ready.");emit projectCreated(projectPath);
  if(projectKind==0){
   if(QStandardPaths::findExecutable("cmake").isEmpty())ensureDependency("CMake","cmake","Kitware.CMake");
   QMessageBox::information(this,"C++ toolchain","EVILWARE will ask CMake to detect the installed compiler. If configuration fails, install Visual Studio Build Tools with Desktop development with C++, or configure a compatible MinGW/Clang toolchain.");

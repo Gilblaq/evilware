@@ -188,8 +188,9 @@ void MainWindow::applyAppearance(const QString &theme,const QString &background,
  QScrollBar::handle:vertical{background:%4;border-radius:4px;min-height:24px;}
  )").arg(text.name()).arg(window.name()).arg(sidebar.name()).arg(border.name()).arg(muted.name()).arg(panel.name()).arg(accent.name()).arg(selection.name()).arg(accent.darker(125).name()).arg(field.name());
  setStyleSheet(css);
- const QString bg=background=="Original EVILWARE artwork"?"background-image:url(:/assets/evilware_core_banner.png);background-position:center;background-repeat:no-repeat;":background=="Deep red"?"background:#21090e;":"background:#10151c;";
+ const QString bg=(theme=="Light" && background=="Original EVILWARE artwork")?"background:#eef2f6;":background=="Original EVILWARE artwork"?"background-image:url(:/assets/evilware_core_banner.png);background-position:center;background-repeat:no-repeat;":background=="Deep red"?"background:#21090e;":"background:#10151c;";
  if(auto *area=findChild<QWidget*>("mainArea"))area->setStyleSheet("QWidget#mainArea{"+bg+"}");
+ if(pages)pages->setStyleSheet(theme=="Light"?"QStackedWidget#pageStack{background:rgba(255,255,255,220);}":"QStackedWidget#pageStack{background:rgba(7,10,15,178);}");
 }
 QWidget* MainWindow::dashboard(){
  auto *w=new QWidget;auto *v=new QVBoxLayout(w);v->setContentsMargins(28,26,28,28);v->setSpacing(18);
@@ -198,7 +199,7 @@ QWidget* MainWindow::dashboard(){
  auto s=readSystemInfo();auto *grid=new QGridLayout;grid->setSpacing(12);
  QStringList labels={"Operating system","Architecture","Device","Processor","Memory","Edition"};
  QStringList values={s.os,s.architecture,s.host,s.cpu,s.memory,"The Unholy Core 3"};
- for(int i=0;i<labels.size();++i){auto *card=new QFrame;card->setObjectName("infoCard");auto *l=new QVBoxLayout(card);l->setContentsMargins(16,14,16,14);auto *a=new QLabel(labels[i]);a->setObjectName("mutedText");auto *b=new QLabel(values[i]);b->setStyleSheet("font-size:13pt;font-weight:600;color:#f0f3f7");b->setWordWrap(true);l->addWidget(a);l->addWidget(b);grid->addWidget(card,i/3,i%3);}
+ for(int i=0;i<labels.size();++i){auto *card=new QFrame;card->setObjectName("infoCard");auto *l=new QVBoxLayout(card);l->setContentsMargins(16,14,16,14);auto *a=new QLabel(labels[i]);a->setObjectName("mutedText");auto *b=new QLabel(values[i]);b->setStyleSheet("font-size:13pt;font-weight:600");b->setWordWrap(true);l->addWidget(a);l->addWidget(b);grid->addWidget(card,i/3,i%3);}
  v->addLayout(grid);
  auto *section=new QLabel("All workspaces");section->setObjectName("pageTitle");section->setStyleSheet("font-size:16pt;font-weight:600");v->addWidget(section);
  auto *list=new QLabel("20 dedicated sections are available in the navigation. Existing working tools include project creation, source editing, local terminals, basic network diagnostics, file browsing, Git commands and the plugin installer. Other workspaces are being implemented and are clearly marked.");list->setObjectName("bodyText");list->setWordWrap(true);v->addWidget(list);v->addStretch();return w;

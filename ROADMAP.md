@@ -26,8 +26,9 @@ This is the active engineering checklist. A feature is only marked complete when
 - [x] Add process stop and clear controls.
 - [x] Report shell startup failures.
 - [x] Avoid duplicate shell restarts when selecting an already-selected shell.
-- [ ] Implement Windows ConPTY for real interactive terminal behavior.
-- [ ] Add multiple terminal tabs and working-directory controls.
+- [ ] Implement Windows ConPTY for real interactive terminal behavior; current shell sessions still use redirected QProcess streams.
+- [x] Add independent terminal tabs with per-tab shell selection and close behavior.
+- [ ] Add working-directory controls.
 - [ ] Validate PowerShell, CMD and WSL stdin behavior on Windows.
 - [ ] Test long-running commands, Unicode, resize, Ctrl+C, history and error output.
 
@@ -47,7 +48,7 @@ This is the active engineering checklist. A feature is only marked complete when
 ## Milestone 5 — Code Studio and project management
 - [x] Basic single-document editor with open/save and syntax highlighting foundation.
 - [ ] Add tabs, line numbers, find/replace, unsaved-change prompts and language-aware editing.
-- [ ] Add project file tree and editor integration.
+- [x] Add project file tree and editor integration; newly created projects open in the Code Studio explorer.
 - [ ] Add recent projects and safe file/folder operations.
 
 ## Milestone 6 — Build Apps
@@ -55,12 +56,13 @@ This is the active engineering checklist. A feature is only marked complete when
 - [x] Provide build/run output and dependency checks.
 - [ ] Correctly discover compiler/toolchain and all CMake executable output layouts.
 - [ ] Add project cancellation, build/stop state and robust process cleanup.
-- [ ] Add tested Qt Widgets and Node.js templates.
+- [x] Add Node.js starter generation and execution path (CI validation pending).
+- [ ] Add tested Qt Widgets template.
 - [ ] Add project reopen/import and packaging workflows.
 
 ## Milestone 7 — Git/GitHub
-- [x] Basic Git status, log and branch inspection actions.
-- [ ] Add stage/unstage, commit, diff, branch creation/switching, push/pull/fetch and clone.
+- [x] Git status, log, branch inspection, diff, stage-all, commit, fetch, pull and push actions (runtime validation pending).
+- [ ] Add unstage, branch creation/switching and clone.
 - [ ] Add secure GitHub authentication and repository operations.
 
 ## Milestone 8 — Network and web security

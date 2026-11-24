@@ -261,8 +261,8 @@ QWidget* MainWindow::settingsPage(){
  auto *theme=new QComboBox;theme->addItems({"Graphite Red","Midnight Blue","Light"});theme->setCurrentText(prefs.value("appearance/theme","Graphite Red").toString());
  auto *background=new QComboBox;background->addItems({"Original EVILWARE artwork","Plain graphite","Deep red"});background->setCurrentText(prefs.value("appearance/background","Original EVILWARE artwork").toString());
  auto *fontSize=new QSpinBox;fontSize->setRange(8,16);fontSize->setValue(prefs.value("appearance/fontSize",10).toInt());
- auto *accent=new QPushButton("Choose accent colour");QColor accentColor(prefs.value("appearance/accent","#e12636").toString());accent->setStyleSheet("background:"+accentColor.name()+";color:white;font-weight:600;");
- connect(accent,&QPushButton::clicked,w,[accent,&accentColor]{QColor chosen=QColorDialog::getColor(accentColor,w,"Choose EVILWARE accent");if(chosen.isValid()){accentColor=chosen;accent->setStyleSheet("background:"+accentColor.name()+";color:white;font-weight:600;");}});
+ auto *accent=new QPushButton("Choose accent colour");auto *accentColor=new QColor(prefs.value("appearance/accent","#e12636").toString());accent->setStyleSheet("background:"+accentColor->name()+";color:white;font-weight:600;");
+ connect(accent,&QPushButton::clicked,w,[accent,accentColor,w]{QColor chosen=QColorDialog::getColor(*accentColor,w,"Choose EVILWARE accent");if(chosen.isValid()){*accentColor=chosen;accent->setStyleSheet("background:"+accentColor->name()+";color:white;font-weight:600;");}});
  af->addRow("Colour theme",theme);af->addRow("Workspace background",background);af->addRow("Accent colour",accent);af->addRow("Interface font size",fontSize);v->addWidget(appearance);
  auto *behaviour=new QGroupBox("APPLICATION BEHAVIOUR");auto *bf=new QFormLayout(behaviour);
  auto *defaultShell=new QComboBox;defaultShell->addItems({"PowerShell","Command Prompt","WSL"});defaultShell->setCurrentText(prefs.value("application/defaultShell","PowerShell").toString());
@@ -273,11 +273,11 @@ QWidget* MainWindow::settingsPage(){
  auto *security=new QGroupBox("SECURITY & PRIVACY");auto *sv=new QVBoxLayout(security);
  auto *securityHint=new QLabel("API credentials are configured in LAMIA AI. EVILWARE will not silently execute commands, install dependencies or modify project files without an explicit action.");securityHint->setWordWrap(true);securityHint->setObjectName("bodyText");sv->addWidget(securityHint);v->addWidget(security);
  auto *save=new QPushButton("Save and apply all settings");save->setObjectName("primaryButton");v->addWidget(save,0,Qt::AlignLeft);
- connect(save,&QPushButton::clicked,w,[this,&prefs,ownerName,ownerEmail,ownerRole,theme,background,fontSize,&accentColor,defaultShell,autosave,confirm,notifications]{
+ connect(save,&QPushButton::clicked,w,[this,&prefs,ownerName,ownerEmail,ownerRole,theme,background,fontSize,accentColor,defaultShell,autosave,confirm,notifications]{
   prefs.setValue("owner/name",ownerName->text().trimmed());prefs.setValue("owner/email",ownerEmail->text().trimmed());prefs.setValue("owner/role",ownerRole->text().trimmed());
-  prefs.setValue("appearance/theme",theme->currentText());prefs.setValue("appearance/background",background->currentText());prefs.setValue("appearance/accent",accentColor.name());prefs.setValue("appearance/fontSize",fontSize->value());
+  prefs.setValue("appearance/theme",theme->currentText());prefs.setValue("appearance/background",background->currentText());prefs.setValue("appearance/accent",accentColor->name());prefs.setValue("appearance/fontSize",fontSize->value());
   prefs.setValue("application/defaultShell",defaultShell->currentText());prefs.setValue("application/autosave",autosave->isChecked());prefs.setValue("security/confirmDestructive",confirm->isChecked());prefs.setValue("application/notifications",notifications->isChecked());prefs.sync();
-  applyAppearance(theme->currentText(),background->currentText(),accentColor,fontSize->value());
+  applyAppearance(theme->currentText(),background->currentText(),*accentColor,fontSize->value());
   QMessageBox::information(this,"Settings saved","EVILWARE preferences have been saved and applied across the application.");
  });
  v->addStretch();return w;

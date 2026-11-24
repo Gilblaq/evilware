@@ -8,7 +8,22 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QGraphicsDropShadowEffect>
+#include <QPixmap>
 #include <QtMath>
+
+
+static void drawCoreArtwork(QPainter &p,const QRect &target,int shade=145){
+ QPixmap artwork(":/assets/evilware_reverse_engineering_banner.jpg");
+ if(!artwork.isNull()){
+  const QSize scaled=artwork.size().scaled(target.size(),Qt::KeepAspectRatioByExpanding);
+  const int sx=qMax(0,(scaled.width()-target.width())/2);
+  const int sy=qMax(0,(scaled.height()-target.height())/2);
+  const QRect source(sx*artwork.width()/scaled.width(),sy*artwork.height()/scaled.height(),
+    target.width()*artwork.width()/scaled.width(),target.height()*artwork.height()/scaled.height());
+  p.save();p.setRenderHint(QPainter::SmoothPixmapTransform);p.drawPixmap(target,artwork,source);p.restore();
+ } else { p.fillRect(target,QColor(3,2,4)); }
+ p.fillRect(target,QColor(2,1,4,shade));
+}
 
 static void drawRedFace(QPainter &p,const QRectF &r){
  p.save();p.setRenderHint(QPainter::Antialiasing);
@@ -62,7 +77,7 @@ SplashScreen::SplashScreen(QWidget *parent):QWidget(parent){
  QTimer::singleShot(4600,this,[this]{emit finished();});
 }
 void SplashScreen::paintEvent(QPaintEvent *){
- QPainter p(this);p.fillRect(rect(),QColor(2,1,3));drawRedFace(p,QRectF(0,0,width(),height()));drawSnake(p,QRectF(0,0,width(),height()),tick);
+ QPainter p(this);drawCoreArtwork(p,rect(),105);drawSnake(p,QRectF(0,0,width(),height()),tick);
  p.fillRect(QRect(0,height()-95,width(),95),QColor(0,0,0,135));p.setPen(QColor(245,240,240));QFont f("Segoe UI",31,QFont::Bold);p.setFont(f);p.drawText(QRect(0,height()-220,width(),52),Qt::AlignCenter,"EVILWARE");p.setPen(QColor(255,35,45));p.setFont(QFont("Segoe UI",14,QFont::DemiBold));p.drawText(QRect(0,height()-170,width(),30),Qt::AlignCenter,"THE UNHOLY CORE 3");p.setPen(QColor(195,195,205));p.setFont(QFont("Segoe UI",10));p.drawText(QRect(0,height()-135,width(),24),Qt::AlignCenter,"DEVELOPER COMMAND CENTRE");QRect bar(width()/2-190,height()-72,380,7);p.setPen(QPen(QColor(115,0,8),1));p.setBrush(QColor(25,12,15));p.drawRoundedRect(bar,4,4);QRect fill=bar;fill.setWidth(qMax(4,(tick%125)*bar.width()/125));p.setPen(Qt::NoPen);p.setBrush(QColor(225,0,18));p.drawRoundedRect(fill,4,4);p.setPen(QColor(205,190,195));p.drawText(QRect(0,height()-58,width(),20),Qt::AlignCenter,"INITIALIZING CORE SYSTEMS...");
 }
 AccessScreen::AccessScreen(QWidget *parent):QWidget(parent){
@@ -85,6 +100,6 @@ AccessScreen::AccessScreen(QWidget *parent):QWidget(parent){
  auto go=[this]{QString value=name->text().trimmed();if(value.isEmpty())value="Guest";emit enterRequested(value);};connect(enter,&QPushButton::clicked,this,go);connect(guest,&QPushButton::clicked,this,[this]{emit enterRequested("Guest");});
 }
 void AccessScreen::setMode(bool create){signup=create;heading->setText(create?"Create your local profile":"Welcome back");loginTab->setStyleSheet(create?"color:#999":"color:#fff;border-bottom:2px solid #e21b2b");signupTab->setStyleSheet(create?"color:#fff;border-bottom:2px solid #e21b2b":"color:#999");name->setPlaceholderText(create?"Choose a display name":"Your name");}
-void AccessScreen::paintEvent(QPaintEvent *){QPainter p(this);p.fillRect(rect(),QColor(3,2,4));drawRedFace(p,QRectF(0,0,width()*.72,height()));drawSnake(p,QRectF(0,0,width()*.72,height()),20);}
+void AccessScreen::paintEvent(QPaintEvent *){QPainter p(this);drawCoreArtwork(p,rect(),135);drawSnake(p,QRectF(0,0,width()*.72,height()),20);}
 SkullBackdrop::SkullBackdrop(QWidget *parent):QWidget(parent){setAttribute(Qt::WA_StyledBackground,false);}
 void SkullBackdrop::paintEvent(QPaintEvent *){QPainter p(this);p.setRenderHint(QPainter::Antialiasing);p.fillRect(rect(),QColor(8,11,16));QRectF r(width()*.35,height()*.12,width()*.43,height()*.78);QRadialGradient fog(r.center(),r.width()*.8);fog.setColorAt(0,QColor(54,76,87,100));fog.setColorAt(1,QColor(5,8,13,0));p.fillRect(rect(),fog);QPointF c=r.center();QPainterPath skull;skull.moveTo(c.x()-r.width()*.29,c.y()-r.height()*.12);skull.cubicTo(c.x()-r.width()*.36,c.y()-r.height()*.55,c.x()+r.width()*.36,c.y()-r.height()*.55,c.x()+r.width()*.29,c.y()-r.height()*.12);skull.cubicTo(c.x()+r.width()*.27,c.y()+r.height()*.18,c.x()+r.width()*.17,c.y()+r.height()*.24,c.x()+r.width()*.15,c.y()+r.height()*.38);skull.lineTo(c.x()+r.width()*.12,c.y()+r.height()*.48);skull.lineTo(c.x()-r.width()*.12,c.y()+r.height()*.48);skull.lineTo(c.x()-r.width()*.15,c.y()+r.height()*.38);skull.cubicTo(c.x()-r.width()*.17,c.y()+r.height()*.24,c.x()-r.width()*.27,c.y()+r.height()*.18,c.x()-r.width()*.29,c.y()-r.height()*.12);skull.closeSubpath();p.setBrush(QColor(150,166,168,35));p.setPen(QPen(QColor(180,198,199,45),2));p.drawPath(skull);p.setBrush(QColor(4,8,13,190));p.setPen(Qt::NoPen);p.drawEllipse(QPointF(c.x()-r.width()*.13,c.y()+r.height()*.06),r.width()*.085,r.height()*.075);p.drawEllipse(QPointF(c.x()+r.width()*.13,c.y()+r.height()*.06),r.width()*.085,r.height()*.075);QPainterPath nose;nose.moveTo(c.x(),c.y()+r.height()*.17);nose.lineTo(c.x()-r.width()*.035,c.y()+r.height()*.28);nose.lineTo(c.x()+r.width()*.035,c.y()+r.height()*.28);nose.closeSubpath();p.drawPath(nose);p.setPen(QPen(QColor(205,0,20,45),2));p.drawLine(QPointF(0,height()*.92),QPointF(width(),height()*.92));}

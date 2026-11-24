@@ -60,6 +60,7 @@ MainWindow::MainWindow(QWidget *p):QMainWindow(p){
  windowsTerminal=new TerminalWidget;windowsTerminal->setShellIndex(0);
  linuxTerminal=new TerminalWidget;linuxTerminal->setShellIndex(2);
  editor=new EditorWidget;projects=new ProjectWidget;cyber=new CyberLabWidget;plugins=new PluginStoreWidget;
+ connect(projects,&ProjectWidget::projectCreated,editor,&EditorWidget::setProjectFolder);
  addPage(dashboard());                         // 01 Dashboard
  addPage(projects);                             // 02 Build Apps
  addPage(editor);                               // 03 Code Studio

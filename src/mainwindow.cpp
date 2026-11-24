@@ -31,10 +31,14 @@
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QMessageBox>
+#include <QApplication>
+#include <QColorDialog>
+#include <QSpinBox>
+#include <QCheckBox>
 
 MainWindow::MainWindow(QWidget *p):QMainWindow(p){
  setWindowTitle("EVILWARE | The Unholy Core 3");
- setWindowIcon(QIcon());
+ setWindowIcon(QIcon(":/assets/evilware_app_icon.png"));
  resize(1440,900);
  setMinimumSize(1050,680);
  auto *root=new QWidget;root->setObjectName("appRoot");
@@ -50,11 +54,17 @@ MainWindow::MainWindow(QWidget *p):QMainWindow(p){
  auto *workspace=new QLabel("WORKSPACE");workspace->setObjectName("sectionCaption");workspace->setContentsMargins(4,20,0,6);side->addWidget(workspace);
  nav=new QListWidget;nav->setObjectName("mainNavigation");nav->setFrameShape(QFrame::NoFrame);nav->setSpacing(3);
  const QStringList items={"Dashboard","Build Apps","Code Studio","Linux Terminal","Windows Terminal","Cyber Lab","Network Tools","Web Security","Digital Forensics","Reverse Engineering","Database Studio","AI Lab","Docker & DevOps","Cloud Manager","File Manager","Git Manager","Plugin Store","System Monitor","Settings","Documentation"};
- const QList<QStyle::StandardPixmap> glyphs={QStyle::SP_ComputerIcon,QStyle::SP_DirOpenIcon,QStyle::SP_FileDialogDetailedView,QStyle::SP_DesktopIcon,QStyle::SP_CommandLink,QStyle::SP_ComputerIcon,QStyle::SP_DriveNetIcon,QStyle::SP_DialogApplyButton,QStyle::SP_FileDialogInfoView,QStyle::SP_FileIcon,QStyle::SP_DriveHDIcon,QStyle::SP_MediaPlay,QStyle::SP_DriveDVDIcon,QStyle::SP_DriveNetIcon,QStyle::SP_DirIcon,QStyle::SP_BrowserReload,QStyle::SP_DialogOpenButton,QStyle::SP_ComputerIcon,QStyle::SP_FileDialogContentsView,QStyle::SP_MessageBoxInformation};
- for(int i=0;i<items.size();++i){auto*item=new QListWidgetItem(style()->standardIcon(glyphs.value(i,QStyle::SP_FileIcon)),items[i]);item->setSizeHint(QSize(205,40));item->setToolTip(items[i]);nav->addItem(item);}
+ const QStringList symbols={"⌂","▦","</>","›_","$_","◇","⌁","◎","▤","⌘","▥","✦","◈","☁","▣","⑂","⊞","◷","⚙","≡"};
+ for(int i=0;i<items.size();++i){
+  auto *item=new QListWidgetItem(symbols.value(i,"•")+"   "+items[i]);
+  item->setData(Qt::UserRole,items[i]);
+  item->setSizeHint(QSize(205,40));
+  item->setToolTip(items[i]);
+  nav->addItem(item);
+ }
  side->addWidget(nav,1);
  auto *footer=new QLabel("EVILWARE  ·  THE UNHOLY CORE 3");footer->setObjectName("sidebarFooter");side->addWidget(footer);
- auto *mainArea=new QWidget;mainArea->setAttribute(Qt::WA_TranslucentBackground);mainArea->setObjectName("mainArea");mainArea->setStyleSheet("QWidget#mainArea{background-image:url(:/assets/evilware_reverse_engineering_banner.jpg);background-position:center;background-repeat:no-repeat;background-color:#080b10;}");auto *mainLayout=new QVBoxLayout(mainArea);mainLayout->setContentsMargins(0,0,0,0);mainLayout->setSpacing(0);
+ auto *mainArea=new QWidget;mainArea->setAttribute(Qt::WA_TranslucentBackground);mainArea->setObjectName("mainArea");mainArea->setStyleSheet("QWidget#mainArea{background-image:url(:/assets/evilware_core_banner.png);background-position:center;background-repeat:no-repeat;background-color:#080b10;}");auto *mainLayout=new QVBoxLayout(mainArea);mainLayout->setContentsMargins(0,0,0,0);mainLayout->setSpacing(0);
  auto *topbar=new QFrame;topbar->setObjectName("topbar");topbar->setFixedHeight(66);auto *top=new QHBoxLayout(topbar);top->setContentsMargins(26,0,26,0);
  activePage=new QLabel("Dashboard");activePage->setObjectName("topbarTitle");
  auto *workspaceLabel=new QLabel("THE UNHOLY CORE 3  /  LOCAL WORKSPACE");workspaceLabel->setObjectName("mutedText");top->addWidget(activePage);top->addStretch();top->addWidget(workspaceLabel);mainLayout->addWidget(topbar);
@@ -123,17 +133,60 @@ MainWindow::MainWindow(QWidget *p):QMainWindow(p){
  )");
  setProperty("baseStyleSheet", styleSheet());
  QSettings saved("EVILWARE","TheUnholyCore3");
- const QString savedTheme=saved.value("appearance/theme","Graphite Red").toString();
- const QString savedBackground=saved.value("appearance/background","Original EVILWARE artwork").toString();
- QString persistedTheme;
- if(savedTheme=="Light") persistedTheme="QWidget#appRoot{background:#edf1f5;color:#17202b;} QFrame#sidebar{background:#e0e6ed;border-right:1px solid #bac4d0;} QFrame#topbar{background:rgba(225,231,238,245);border-bottom:1px solid #bac4d0;} QLabel#topbarTitle,QLabel#pageTitle,QLabel#cardTitle{color:#182333;} QLabel#bodyText{color:#344154;} QFrame#infoCard,QFrame#pluginCard{background:rgba(255,255,255,235);border:1px solid #c6d0dc;} QLineEdit,QComboBox,QPlainTextEdit,QTreeView{background:#fff;color:#182333;border:1px solid #bac4d0;}";
- else if(savedTheme=="Midnight Blue") persistedTheme="QWidget#appRoot{background:#081321;color:#e4efff;} QFrame#sidebar{background:#0c1b2d;border-right:1px solid #1e3a5c;} QFrame#topbar{background:rgba(8,22,39,240);border-bottom:1px solid #1e3a5c;} QListWidget#mainNavigation::item:selected{background:#173b60;border-left:3px solid #4da3ff;} QPushButton#primaryButton{background:#155da0;border:1px solid #4da3ff;color:white;}";
- else persistedTheme="QWidget#appRoot{background:#0d1117;color:#e7ebf1;} QFrame#sidebar{background:#11151b;border-right:1px solid #2a3039;} QFrame#topbar{background:rgba(17,20,26,235);border-bottom:1px solid #2a3039;} QListWidget#mainNavigation::item:selected{background:#43151b;border-left:3px solid #e12636;} QPushButton#primaryButton{background:#a90014;border:1px solid #e12636;color:white;}";
- const QString persistedBackground=savedBackground=="Original EVILWARE artwork"?"background-image:url(:/assets/evilware_reverse_engineering_banner.jpg);background-position:center;background-repeat:no-repeat;":savedBackground=="Deep red"?"background:#21090e;":"background:#10151c;";
- setStyleSheet(property("baseStyleSheet").toString()+persistedTheme+" QWidget#mainArea{"+persistedBackground+"}");
+ applyAppearance(saved.value("appearance/theme","Graphite Red").toString(),
+                 saved.value("appearance/background","Original EVILWARE artwork").toString(),
+                 QColor(saved.value("appearance/accent","#e12636").toString()),
+                 saved.value("appearance/fontSize",10).toInt());
 }
 void MainWindow::addPage(QWidget *page){pages->addWidget(page);}
-void MainWindow::showPage(int row){if(row<0||row>=pages->count())return;pages->setCurrentIndex(row);activePage->setText(nav->item(row)->text());}
+void MainWindow::showPage(int row){if(row<0||row>=pages->count())return;pages->setCurrentIndex(row);activePage->setText(nav->item(row)->data(Qt::UserRole).toString());}
+void MainWindow::applyAppearance(const QString &theme,const QString &background,const QColor &accent,int fontSize){
+ QColor window,sidebar,panel,text,muted,border,field,selection;
+ if(theme=="Light"){
+  window=QColor("#eef2f6");sidebar=QColor("#e2e8ef");panel=QColor("#ffffff");text=QColor("#172333");muted=QColor("#566579");border=QColor("#c6d0dc");field=QColor("#ffffff");selection=QColor("#dbeafe");
+ }else if(theme=="Midnight Blue"){
+  window=QColor("#081321");sidebar=QColor("#0c1b2d");panel=QColor("#102238");text=QColor("#e4efff");muted=QColor("#91a8c4");border=QColor("#1e3a5c");field=QColor("#0b1929");selection=QColor("#173b60");
+ }else{
+  window=QColor("#0d1117");sidebar=QColor("#11151b");panel=QColor("#141a22");text=QColor("#e7ebf1");muted=QColor("#909baa");border=QColor("#2a3039");field=QColor("#141a22");selection=QColor("#43151b");
+ }
+ if(!accent.isValid())return;
+ QPalette pal=qApp->palette();
+ pal.setColor(QPalette::Window,window);pal.setColor(QPalette::WindowText,text);
+ pal.setColor(QPalette::Base,field);pal.setColor(QPalette::AlternateBase,panel);
+ pal.setColor(QPalette::Text,text);pal.setColor(QPalette::Button,panel);
+ pal.setColor(QPalette::ButtonText,text);pal.setColor(QPalette::Highlight,accent);
+ pal.setColor(QPalette::HighlightedText,Qt::white);pal.setColor(QPalette::ToolTipBase,panel);
+ pal.setColor(QPalette::ToolTipText,text);qApp->setPalette(pal);
+ qApp->setFont(QFont("Segoe UI",qBound(8,fontSize,16)));
+ const QString css=property("baseStyleSheet").toString()+QString(R"(
+ QWidget{color:%1;}
+ QWidget#appRoot{background:%2;color:%1;}
+ QFrame#sidebar{background:%3;border-right:1px solid %4;}
+ QFrame#topbar{background:%3;border-bottom:1px solid %4;}
+ QLabel#topbarTitle,QLabel#pageTitle,QLabel#cardTitle{color:%1;}
+ QLabel#mutedText,QLabel#sectionCaption,QLabel#sidebarFooter{color:%5;}
+ QFrame#infoCard,QFrame#pluginCard{background:%6;border:1px solid %4;}
+ QPushButton{background:%6;color:%1;border:1px solid %4;border-radius:6px;padding:8px 13px;}
+ QPushButton:hover{border-color:%7;background:%8;}
+ QPushButton#primaryButton{background:%7;border:1px solid %7;color:white;font-weight:600;}
+ QPushButton#primaryButton:hover{background:%9;}
+ QLineEdit,QComboBox,QPlainTextEdit,QTreeView,QSpinBox{background:%10;color:%1;border:1px solid %4;border-radius:6px;padding:8px;selection-background-color:%7;}
+ QGroupBox{border:1px solid %4;border-radius:8px;margin-top:12px;padding:12px 10px 10px;font-weight:600;}
+ QGroupBox::title{subcontrol-origin:margin;left:12px;padding:0 5px;color:%5;}
+ QListWidget#mainNavigation{background:transparent;color:%1;}
+ QListWidget#mainNavigation::item{padding:9px 12px;border-radius:7px;}
+ QListWidget#mainNavigation::item:hover{background:%8;}
+ QListWidget#mainNavigation::item:selected{background:%8;color:%1;border-left:3px solid %7;padding-left:9px;}
+ QTabWidget::pane{border:1px solid %4;background:%6;}
+ QMenu{background:%6;color:%1;border:1px solid %4;}
+ QMenu::item:selected{background:%8;}
+ QScrollBar:vertical{background:%2;width:10px;margin:0;}
+ QScrollBar::handle:vertical{background:%4;border-radius:4px;min-height:24px;}
+ )").arg(text.name(),window.name(),sidebar.name(),border.name(),muted.name(),panel.name(),accent.name(),selection.name(),accent.darker(125).name(),field.name());
+ setStyleSheet(css);
+ const QString bg=background=="Original EVILWARE artwork"?"background-image:url(:/assets/evilware_core_banner.png);background-position:center;background-repeat:no-repeat;":background=="Deep red"?"background:#21090e;":"background:#10151c;";
+ if(auto *area=findChild<QWidget*>("mainArea"))area->setStyleSheet("QWidget#mainArea{"+bg+"}");
+}
 QWidget* MainWindow::dashboard(){
  auto *w=new QWidget;auto *v=new QVBoxLayout(w);v->setContentsMargins(28,26,28,28);v->setSpacing(18);
  auto *title=new QLabel("Welcome to EVILWARE");title->setObjectName("pageTitle");v->addWidget(title);
@@ -193,22 +246,39 @@ QWidget* MainWindow::gitPage(){
  return w;
 }
 QWidget* MainWindow::settingsPage(){
- auto*w=new QWidget;auto*v=new QVBoxLayout(w);v->setContentsMargins(24,20,24,20);v->setSpacing(14);
- auto*title=new QLabel("Owner & Application Settings");title->setObjectName("pageTitle");v->addWidget(title);
- auto*hint=new QLabel("Local owner profile and preferences. This is a local profile, not online authentication or a security boundary.");hint->setObjectName("mutedText");hint->setWordWrap(true);v->addWidget(hint);
+ auto *w=new QWidget;auto *outer=new QVBoxLayout(w);outer->setContentsMargins(24,20,24,20);
+ auto *scroll=new QScrollArea;scroll->setWidgetResizable(true);scroll->setFrameShape(QFrame::NoFrame);outer->addWidget(scroll);
+ auto *content=new QWidget;auto *v=new QVBoxLayout(content);v->setSpacing(14);scroll->setWidget(content);
+ auto *title=new QLabel("Settings Center");title->setObjectName("pageTitle");v->addWidget(title);
+ auto *hint=new QLabel("Configure the complete EVILWARE workstation. Appearance changes apply across all workspaces and persist after restart.");hint->setObjectName("mutedText");hint->setWordWrap(true);v->addWidget(hint);
  QSettings prefs("EVILWARE","TheUnholyCore3");
- auto*ownerBox=new QGroupBox("OWNER PROFILE");auto*form=new QFormLayout(ownerBox);
- auto*ownerName=new QLineEdit(prefs.value("owner/name","Local Owner").toString());auto*ownerEmail=new QLineEdit(prefs.value("owner/email").toString());auto*ownerRole=new QLineEdit(prefs.value("owner/role","Local owner").toString());
- form->addRow("Display name",ownerName);form->addRow("Email / contact",ownerEmail);form->addRow("Role",ownerRole);v->addWidget(ownerBox);
- auto*appearance=new QGroupBox("APPEARANCE");auto*af=new QFormLayout(appearance);
- auto*theme=new QComboBox;theme->addItems({"Graphite Red","Midnight Blue","Light"});theme->setCurrentText(prefs.value("appearance/theme","Graphite Red").toString());
- auto*background=new QComboBox;background->addItems({"Original EVILWARE artwork","Plain graphite","Deep red"});background->setCurrentText(prefs.value("appearance/background","Original EVILWARE artwork").toString());af->addRow("Colour theme",theme);af->addRow("Workspace background",background);v->addWidget(appearance);
- auto*info=new QLabel("Local commands run under your current Windows user. No online owner login is configured. Do not store passwords or API secrets in this profile.");info->setWordWrap(true);info->setObjectName("bodyText");v->addWidget(info);
- auto*save=new QPushButton("Save and apply preferences");save->setObjectName("primaryButton");v->addWidget(save,0,Qt::AlignLeft);
- auto apply=[this,theme,background](){QString t=theme->currentText(),b=background->currentText();
- QString colors=t=="Light"?"QWidget#appRoot{background:#edf1f5;color:#17202b;} QFrame#sidebar{background:#e0e6ed;border-right:1px solid #bac4d0;} QFrame#topbar{background:rgba(225,231,238,245);border-bottom:1px solid #bac4d0;} QLabel#topbarTitle,QLabel#pageTitle,QLabel#cardTitle{color:#182333;} QLabel#bodyText{color:#344154;} QFrame#infoCard,QFrame#pluginCard{background:rgba(255,255,255,235);border:1px solid #c6d0dc;} QLineEdit,QComboBox,QPlainTextEdit,QTreeView{background:#fff;color:#182333;border:1px solid #bac4d0;}":t=="Midnight Blue"?"QWidget#appRoot{background:#081321;color:#e4efff;} QFrame#sidebar{background:#0c1b2d;border-right:1px solid #1e3a5c;} QFrame#topbar{background:rgba(8,22,39,240);border-bottom:1px solid #1e3a5c;} QListWidget#mainNavigation::item:selected{background:#173b60;border-left:3px solid #4da3ff;} QPushButton#primaryButton{background:#155da0;border:1px solid #4da3ff;color:white;}":"QWidget#appRoot{background:#0d1117;color:#e7ebf1;} QFrame#sidebar{background:#11151b;border-right:1px solid #2a3039;} QFrame#topbar{background:rgba(17,20,26,235);border-bottom:1px solid #2a3039;} QListWidget#mainNavigation::item:selected{background:#43151b;border-left:3px solid #e12636;} QPushButton#primaryButton{background:#a90014;border:1px solid #e12636;color:white;}";
- QString bg=b=="Original EVILWARE artwork"?"background-image:url(:/assets/evilware_reverse_engineering_banner.jpg);background-position:center;background-repeat:no-repeat;":b=="Deep red"?"background:#21090e;":"background:#10151c;";
- setStyleSheet(property("baseStyleSheet").toString()+colors+" QWidget#mainArea{"+bg+"}");};
- connect(save,&QPushButton::clicked,w,[&prefs,ownerName,ownerEmail,ownerRole,theme,background,apply]{prefs.setValue("owner/name",ownerName->text().trimmed());prefs.setValue("owner/email",ownerEmail->text().trimmed());prefs.setValue("owner/role",ownerRole->text().trimmed());prefs.setValue("appearance/theme",theme->currentText());prefs.setValue("appearance/background",background->currentText());prefs.sync();apply();});
- apply();v->addStretch();return w;
+ auto *ownerBox=new QGroupBox("LOCAL PROFILE");auto *ownerForm=new QFormLayout(ownerBox);
+ auto *ownerName=new QLineEdit(prefs.value("owner/name","Local Owner").toString());
+ auto *ownerEmail=new QLineEdit(prefs.value("owner/email").toString());
+ auto *ownerRole=new QLineEdit(prefs.value("owner/role","Local owner").toString());
+ ownerForm->addRow("Display name",ownerName);ownerForm->addRow("Email / contact",ownerEmail);ownerForm->addRow("Role",ownerRole);v->addWidget(ownerBox);
+ auto *appearance=new QGroupBox("APPEARANCE");auto *af=new QFormLayout(appearance);
+ auto *theme=new QComboBox;theme->addItems({"Graphite Red","Midnight Blue","Light"});theme->setCurrentText(prefs.value("appearance/theme","Graphite Red").toString());
+ auto *background=new QComboBox;background->addItems({"Original EVILWARE artwork","Plain graphite","Deep red"});background->setCurrentText(prefs.value("appearance/background","Original EVILWARE artwork").toString());
+ auto *fontSize=new QSpinBox;fontSize->setRange(8,16);fontSize->setValue(prefs.value("appearance/fontSize",10).toInt());
+ auto *accent=new QPushButton("Choose accent colour");QColor accentColor(prefs.value("appearance/accent","#e12636").toString());accent->setStyleSheet("background:"+accentColor.name()+";color:white;font-weight:600;");
+ connect(accent,&QPushButton::clicked,w,[accent,&accentColor]{QColor chosen=QColorDialog::getColor(accentColor,w,"Choose EVILWARE accent");if(chosen.isValid()){accentColor=chosen;accent->setStyleSheet("background:"+accentColor.name()+";color:white;font-weight:600;");}});
+ af->addRow("Colour theme",theme);af->addRow("Workspace background",background);af->addRow("Accent colour",accent);af->addRow("Interface font size",fontSize);v->addWidget(appearance);
+ auto *behaviour=new QGroupBox("APPLICATION BEHAVIOUR");auto *bf=new QFormLayout(behaviour);
+ auto *defaultShell=new QComboBox;defaultShell->addItems({"PowerShell","Command Prompt","WSL"});defaultShell->setCurrentText(prefs.value("application/defaultShell","PowerShell").toString());
+ auto *autosave=new QCheckBox("Enable editor autosave");autosave->setChecked(prefs.value("application/autosave",false).toBool());
+ auto *confirm=new QCheckBox("Confirm potentially destructive actions");confirm->setChecked(prefs.value("security/confirmDestructive",true).toBool());
+ auto *notifications=new QCheckBox("Enable application notifications");notifications->setChecked(prefs.value("application/notifications",true).toBool());
+ bf->addRow("Default terminal",defaultShell);bf->addRow(autosave);bf->addRow(confirm);bf->addRow(notifications);v->addWidget(behaviour);
+ auto *security=new QGroupBox("SECURITY & PRIVACY");auto *sv=new QVBoxLayout(security);
+ auto *securityHint=new QLabel("API credentials are configured in LAMIA AI. EVILWARE will not silently execute commands, install dependencies or modify project files without an explicit action.");securityHint->setWordWrap(true);securityHint->setObjectName("bodyText");sv->addWidget(securityHint);v->addWidget(security);
+ auto *save=new QPushButton("Save and apply all settings");save->setObjectName("primaryButton");v->addWidget(save,0,Qt::AlignLeft);
+ connect(save,&QPushButton::clicked,w,[this,&prefs,ownerName,ownerEmail,ownerRole,theme,background,fontSize,&accentColor,defaultShell,autosave,confirm,notifications]{
+  prefs.setValue("owner/name",ownerName->text().trimmed());prefs.setValue("owner/email",ownerEmail->text().trimmed());prefs.setValue("owner/role",ownerRole->text().trimmed());
+  prefs.setValue("appearance/theme",theme->currentText());prefs.setValue("appearance/background",background->currentText());prefs.setValue("appearance/accent",accentColor.name());prefs.setValue("appearance/fontSize",fontSize->value());
+  prefs.setValue("application/defaultShell",defaultShell->currentText());prefs.setValue("application/autosave",autosave->isChecked());prefs.setValue("security/confirmDestructive",confirm->isChecked());prefs.setValue("application/notifications",notifications->isChecked());prefs.sync();
+  applyAppearance(theme->currentText(),background->currentText(),accentColor,fontSize->value());
+  QMessageBox::information(this,"Settings saved","EVILWARE preferences have been saved and applied across the application.");
+ });
+ v->addStretch();return w;
 }

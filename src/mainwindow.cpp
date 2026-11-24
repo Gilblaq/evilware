@@ -23,6 +23,11 @@
 #include <QListWidgetItem>
 #include <QSizePolicy>
 #include <QIcon>
+#include <QStyle>
+#include <QSettings>
+#include <QComboBox>
+#include <QFormLayout>
+#include <QGroupBox>
 
 MainWindow::MainWindow(QWidget *p):QMainWindow(p){
  setWindowTitle("EVILWARE | The Unholy Core 3");
@@ -42,7 +47,8 @@ MainWindow::MainWindow(QWidget *p):QMainWindow(p){
  auto *workspace=new QLabel("WORKSPACE");workspace->setObjectName("sectionCaption");workspace->setContentsMargins(4,20,0,6);side->addWidget(workspace);
  nav=new QListWidget;nav->setObjectName("mainNavigation");nav->setFrameShape(QFrame::NoFrame);nav->setSpacing(3);
  const QStringList items={"Dashboard","Build Apps","Code Studio","Linux Terminal","Windows Terminal","Cyber Lab","Network Tools","Web Security","Digital Forensics","Reverse Engineering","Database Studio","AI Lab","Docker & DevOps","Cloud Manager","File Manager","Git Manager","Plugin Store","System Monitor","Settings","Documentation"};
- for(const QString &name:items){auto *item=new QListWidgetItem(name);item->setSizeHint(QSize(205,39));nav->addItem(item);}
+ const QList<QStyle::StandardPixmap> glyphs={QStyle::SP_ComputerIcon,QStyle::SP_DirOpenIcon,QStyle::SP_FileDialogDetailedView,QStyle::SP_DesktopIcon,QStyle::SP_CommandLink,QStyle::SP_ComputerIcon,QStyle::SP_DriveNetIcon,QStyle::SP_DialogApplyButton,QStyle::SP_FileDialogInfoView,QStyle::SP_FileIcon,QStyle::SP_DriveHDIcon,QStyle::SP_MediaPlay,QStyle::SP_DriveDVDIcon,QStyle::SP_DriveNetIcon,QStyle::SP_DirIcon,QStyle::SP_BrowserReload,QStyle::SP_DialogOpenButton,QStyle::SP_ComputerIcon,QStyle::SP_FileDialogContentsView,QStyle::SP_MessageBoxInformation};
+ for(int i=0;i<items.size();++i){auto*item=new QListWidgetItem(style()->standardIcon(glyphs.value(i,QStyle::SP_FileIcon)),items[i]);item->setSizeHint(QSize(205,40));item->setToolTip(items[i]);nav->addItem(item);}
  side->addWidget(nav,1);
  auto *footer=new QLabel("EVILWARE  ·  THE UNHOLY CORE 3");footer->setObjectName("sidebarFooter");side->addWidget(footer);
  auto *mainArea=new QWidget;mainArea->setAttribute(Qt::WA_TranslucentBackground);mainArea->setObjectName("mainArea");mainArea->setStyleSheet("QWidget#mainArea{background-image:url(:/assets/evilware_reverse_engineering_banner.jpg);background-position:center;background-repeat:no-repeat;background-color:#080b10;}");auto *mainLayout=new QVBoxLayout(mainArea);mainLayout->setContentsMargins(0,0,0,0);mainLayout->setSpacing(0);
@@ -136,6 +142,22 @@ QWidget* MainWindow::gitPage(){
  auto *row=new QHBoxLayout;for(QString cmd:{"status","log --oneline -10","branch --all"}){auto *b=new QPushButton("git "+cmd);row->addWidget(b);connect(b,&QPushButton::clicked,w,[path,out,cmd,w]{auto *p=new QProcess(w);p->setWorkingDirectory(path->text());p->start("git",cmd.split(' '));QObject::connect(p,&QProcess::readyReadStandardOutput,[p,out]{out->appendPlainText(QString::fromLocal8Bit(p->readAllStandardOutput()));});QObject::connect(p,&QProcess::readyReadStandardError,[p,out]{out->appendPlainText(QString::fromLocal8Bit(p->readAllStandardError()));});QObject::connect(p,qOverload<int,QProcess::ExitStatus>(&QProcess::finished),p,&QObject::deleteLater);});}v->addLayout(row);return w;
 }
 QWidget* MainWindow::settingsPage(){
- auto *w=new QWidget;auto *v=new QVBoxLayout(w);v->setContentsMargins(24,20,24,20);auto *title=new QLabel("Settings");title->setObjectName("pageTitle");v->addWidget(title);
- auto *details=new QLabel("EVILWARE Developer Command Centre\nEdition: The Unholy Core 3\nArchitecture: Windows x64\nTheme: Professional Graphite\nTerminal commands run locally under the signed-in Windows user account.\nExternal tools are installed only after you choose them in Plugin Store.\nSecurity workspaces are intended for authorized testing and defensive research.");details->setWordWrap(true);details->setObjectName("bodyText");v->addWidget(details);v->addStretch();return w;
+ auto*w=new QWidget;auto*v=new QVBoxLayout(w);v->setContentsMargins(24,20,24,20);v->setSpacing(14);
+ auto*title=new QLabel("Owner & Application Settings");title->setObjectName("pageTitle");v->addWidget(title);
+ auto*hint=new QLabel("Local owner profile and preferences. This is a local profile, not online authentication or a security boundary.");hint->setObjectName("mutedText");hint->setWordWrap(true);v->addWidget(hint);
+ QSettings prefs("EVILWARE","TheUnholyCore3");
+ auto*ownerBox=new QGroupBox("OWNER PROFILE");auto*form=new QFormLayout(ownerBox);
+ auto*ownerName=new QLineEdit(prefs.value("owner/name","Local Owner").toString());auto*ownerEmail=new QLineEdit(prefs.value("owner/email").toString());auto*ownerRole=new QLineEdit(prefs.value("owner/role","Local owner").toString());
+ form->addRow("Display name",ownerName);form->addRow("Email / contact",ownerEmail);form->addRow("Role",ownerRole);v->addWidget(ownerBox);
+ auto*appearance=new QGroupBox("APPEARANCE");auto*af=new QFormLayout(appearance);
+ auto*theme=new QComboBox;theme->addItems({"Graphite Red","Midnight Blue","Light"});theme->setCurrentText(prefs.value("appearance/theme","Graphite Red").toString());
+ auto*background=new QComboBox;background->addItems({"Original EVILWARE artwork","Plain graphite","Deep red"});background->setCurrentText(prefs.value("appearance/background","Original EVILWARE artwork").toString());af->addRow("Colour theme",theme);af->addRow("Workspace background",background);v->addWidget(appearance);
+ auto*info=new QLabel("Local commands run under your current Windows user. No online owner login is configured. Do not store passwords or API secrets in this profile.");info->setWordWrap(true);info->setObjectName("bodyText");v->addWidget(info);
+ auto*save=new QPushButton("Save and apply preferences");save->setObjectName("primaryButton");v->addWidget(save,0,Qt::AlignLeft);
+ auto apply=[this,theme,background](){QString t=theme->currentText(),b=background->currentText();
+ QString colors=t=="Light"?"QWidget#appRoot{background:#edf1f5;color:#17202b;} QFrame#sidebar{background:#e0e6ed;border-right:1px solid #bac4d0;} QFrame#topbar{background:rgba(225,231,238,245);border-bottom:1px solid #bac4d0;} QLabel#topbarTitle,QLabel#pageTitle,QLabel#cardTitle{color:#182333;} QLabel#bodyText{color:#344154;} QFrame#infoCard,QFrame#pluginCard{background:rgba(255,255,255,235);border:1px solid #c6d0dc;} QLineEdit,QComboBox,QPlainTextEdit,QTreeView{background:#fff;color:#182333;border:1px solid #bac4d0;}":t=="Midnight Blue"?"QWidget#appRoot{background:#081321;color:#e4efff;} QFrame#sidebar{background:#0c1b2d;border-right:1px solid #1e3a5c;} QFrame#topbar{background:rgba(8,22,39,240);border-bottom:1px solid #1e3a5c;} QListWidget#mainNavigation::item:selected{background:#173b60;border-left:3px solid #4da3ff;} QPushButton#primaryButton{background:#155da0;border:1px solid #4da3ff;color:white;}":"QWidget#appRoot{background:#0d1117;color:#e7ebf1;} QFrame#sidebar{background:#11151b;border-right:1px solid #2a3039;} QFrame#topbar{background:rgba(17,20,26,235);border-bottom:1px solid #2a3039;} QListWidget#mainNavigation::item:selected{background:#43151b;border-left:3px solid #e12636;} QPushButton#primaryButton{background:#a90014;border:1px solid #e12636;color:white;}";
+ QString bg=b=="Original EVILWARE artwork"?"background-image:url(:/assets/evilware_reverse_engineering_banner.jpg);background-position:center;background-repeat:no-repeat;":b=="Deep red"?"background:#21090e;":"background:#10151c;";
+ setStyleSheet(styleSheet()+colors+" QWidget#mainArea{"+bg+"}");};
+ connect(save,&QPushButton::clicked,w,[&prefs,ownerName,ownerEmail,ownerRole,theme,background,apply]{prefs.setValue("owner/name",ownerName->text().trimmed());prefs.setValue("owner/email",ownerEmail->text().trimmed());prefs.setValue("owner/role",ownerRole->text().trimmed());prefs.setValue("appearance/theme",theme->currentText());prefs.setValue("appearance/background",background->currentText());prefs.sync();apply();});
+ apply();v->addStretch();return w;
 }

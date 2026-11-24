@@ -14,6 +14,7 @@ This is the active engineering checklist. A feature is only marked complete when
 - [x] Removed the animated snake from splash and access screens.
 - [x] Added a standard-library asset generator for original offline artwork and a multi-resolution Windows application icon.
 - [x] Replaced legacy Qt standard navigation glyphs with a consistent symbol-based navigation treatment.
+- [x] Replaced the AI Lab placeholder with the first functional LAMIA AI chat/provider implementation.
 - [x] Expanded appearance settings and introduced an application-wide palette/style application path; runtime verification pending.
 - [x] Terminal output insertion now preserves text being typed; stop/clear controls and process-start errors added.
 - [ ] Terminal remains a QProcess/stdin command console, not a full VT/ConPTY terminal emulator; interactive TTY applications and terminal escape sequences are not yet supported.
@@ -88,9 +89,11 @@ This is the active engineering checklist. A feature is only marked complete when
 - [ ] Add safe read-only defaults and explicit write/transaction controls.
 
 ## Milestone 11 — AI Lab
-- [x] Basic Ollama version/model/process command actions.
-- [ ] Add a real prompt/chat interface, streamed output and model management.
-- [ ] Validate missing Ollama and model-not-found behavior.
+- [x] Added LAMIA AI chat workspace with provider selection, configurable endpoint/model and async requests.
+- [x] Added Ollama `/api/chat` and OpenAI-compatible `/v1/chat/completions` request paths.
+- [x] Added provider connection testing and Ollama/OpenAI-compatible model discovery.
+- [x] Added Windows DPAPI protection for saved API keys; secrets are not stored as plaintext in QSettings.
+- [ ] Validate live provider requests, model errors and key protection on Windows; no external provider credentials are available for CI.
 
 ## Milestone 12 — Docker and DevOps
 - [x] Basic Docker version, containers, images and Compose checks.

@@ -45,11 +45,11 @@ MainWindow::MainWindow(QWidget *p):QMainWindow(p){
  for(const QString &name:items){auto *item=new QListWidgetItem(name);item->setSizeHint(QSize(205,39));nav->addItem(item);}
  side->addWidget(nav,1);
  auto *footer=new QLabel("EVILWARE  ·  THE UNHOLY CORE 3");footer->setObjectName("sidebarFooter");side->addWidget(footer);
- auto *mainArea=new QWidget;mainArea->setAttribute(Qt::WA_TranslucentBackground);mainArea->setObjectName("mainArea");auto *mainLayout=new QVBoxLayout(mainArea);mainLayout->setContentsMargins(0,0,0,0);mainLayout->setSpacing(0);
+ auto *mainArea=new QWidget;mainArea->setAttribute(Qt::WA_TranslucentBackground);mainArea->setObjectName("mainArea");mainArea->setStyleSheet("QWidget#mainArea{background-image:url(:/assets/evilware_reverse_engineering_banner.jpg);background-position:center;background-repeat:no-repeat;background-color:#080b10;}");auto *mainLayout=new QVBoxLayout(mainArea);mainLayout->setContentsMargins(0,0,0,0);mainLayout->setSpacing(0);
  auto *topbar=new QFrame;topbar->setObjectName("topbar");topbar->setFixedHeight(66);auto *top=new QHBoxLayout(topbar);top->setContentsMargins(26,0,26,0);
  activePage=new QLabel("Dashboard");activePage->setObjectName("topbarTitle");
  auto *workspaceLabel=new QLabel("THE UNHOLY CORE 3  /  LOCAL WORKSPACE");workspaceLabel->setObjectName("mutedText");top->addWidget(activePage);top->addStretch();top->addWidget(workspaceLabel);mainLayout->addWidget(topbar);
- pages=new QStackedWidget;pages->setObjectName("pageStack");mainLayout->addWidget(pages,1);outer->addWidget(sidebar);outer->addWidget(mainArea,1);setCentralWidget(root);
+ pages=new QStackedWidget;pages->setObjectName("pageStack");pages->setStyleSheet("QStackedWidget#pageStack{background:rgba(7,10,15,178);}");mainLayout->addWidget(pages,1);outer->addWidget(sidebar);outer->addWidget(mainArea,1);setCentralWidget(root);
 
  windowsTerminal=new TerminalWidget;windowsTerminal->setShellIndex(0);
  linuxTerminal=new TerminalWidget;linuxTerminal->setShellIndex(2);

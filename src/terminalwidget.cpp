@@ -242,11 +242,17 @@ TerminalWidget::TerminalWidget(QWidget *parent) : QWidget(parent) {
     connect(newTab, &QPushButton::clicked, this, [this] { addTab(); });
     connect(closeTab, &QPushButton::clicked, this, [this] {
         const int index = tabs->currentIndex();
-        if (index >= 0) tabs->removeTab(index);
+        if (index >= 0) {
+            QWidget *page = tabs->widget(index);
+            tabs->removeTab(index);
+            if (page) page->deleteLater();
+        }
         if (tabs->count() == 0) addTab();
     });
     connect(tabs, &QTabWidget::tabCloseRequested, this, [this](int index) {
+        QWidget *page = tabs->widget(index);
         tabs->removeTab(index);
+        if (page) page->deleteLater();
         if (tabs->count() == 0) addTab();
     });
     addTab();

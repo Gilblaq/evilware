@@ -35,6 +35,9 @@
 #include <QColorDialog>
 #include <QSpinBox>
 #include <QCheckBox>
+#include <QScrollArea>
+#include <QPalette>
+#include <QFont>
 
 MainWindow::MainWindow(QWidget *p):QMainWindow(p){
  setWindowTitle("EVILWARE | The Unholy Core 3");
@@ -182,7 +185,7 @@ void MainWindow::applyAppearance(const QString &theme,const QString &background,
  QMenu::item:selected{background:%8;}
  QScrollBar:vertical{background:%2;width:10px;margin:0;}
  QScrollBar::handle:vertical{background:%4;border-radius:4px;min-height:24px;}
- )").arg(text.name(),window.name(),sidebar.name(),border.name(),muted.name(),panel.name(),accent.name(),selection.name(),accent.darker(125).name(),field.name());
+ )").arg(text.name()).arg(window.name()).arg(sidebar.name()).arg(border.name()).arg(muted.name()).arg(panel.name()).arg(accent.name()).arg(selection.name()).arg(accent.darker(125).name()).arg(field.name());
  setStyleSheet(css);
  const QString bg=background=="Original EVILWARE artwork"?"background-image:url(:/assets/evilware_core_banner.png);background-position:center;background-repeat:no-repeat;":background=="Deep red"?"background:#21090e;":"background:#10151c;";
  if(auto *area=findChild<QWidget*>("mainArea"))area->setStyleSheet("QWidget#mainArea{"+bg+"}");

@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include <QFileDialog>
 #include <QDir>
+#include <QDirIterator>
 #include <QFile>
 #include <QFileInfo>
 #include <QVBoxLayout>
@@ -64,8 +65,7 @@ void ProjectWidget::createProject(){
  projectPath=d.absolutePath();buildRunButton->setEnabled(true);output->clear();message->setText("Project created: "+projectPath+" — use Build / Run when ready.");
  if(projectKind==0){
   if(QStandardPaths::findExecutable("cmake").isEmpty())ensureDependency("CMake","cmake","Kitware.CMake");
-  const bool compiler=!QStandardPaths::findExecutable("cl").isEmpty()||!QStandardPaths::findExecutable("g++").isEmpty()||!QStandardPaths::findExecutable("clang++").isEmpty();
-  if(!compiler)QMessageBox::information(this,"C++ compiler required","The project files are ready, but no C++ compiler was detected. Install Visual Studio Build Tools with the Desktop development with C++ workload, or configure an existing MinGW/Clang toolchain before building.");
+  QMessageBox::information(this,"C++ toolchain","EVILWARE will ask CMake to detect the installed compiler. If configuration fails, install Visual Studio Build Tools with Desktop development with C++, or configure a compatible MinGW/Clang toolchain.");
  }else if(projectKind==1&&QStandardPaths::findExecutable("python").isEmpty()&&QStandardPaths::findExecutable("py").isEmpty()){
   ensureDependency("Python 3","python","Python.Python.3.12");
  }
@@ -87,11 +87,11 @@ void ProjectWidget::finishBuildStage(int code,QProcess::ExitStatus status){
  if(buildStage==1){appendOutput("\n[EVILWARE] CMake configuration completed.\n");startProcess(QStandardPaths::findExecutable("cmake"),{"--build",QDir(projectPath).filePath("build"),"--config","Release"},2);return;}
  if(buildStage==2){
   appendOutput("\n[EVILWARE] Build completed successfully. Launching the program…\n");
-  const QString base=QFileInfo(QDir(projectPath).filePath("CMakeLists.txt")).dir().dirName();
-  Q_UNUSED(base);
-  QString exe=QDir(projectPath).filePath("build/Release/"+QFileInfo(projectPath).fileName()+".exe");
-  if(!QFileInfo::exists(exe))exe=QDir(projectPath).filePath("build/"+QFileInfo(projectPath).fileName()+".exe");
-  if(!QFileInfo::exists(exe)){appendOutput("[EVILWARE] Build succeeded, but the expected executable was not found. Check the build folder.\n");message->setText("Build succeeded; executable location needs checking.");buildRunButton->setEnabled(true);return;}
+  const QString executableName=QFileInfo(projectPath).fileName()+".exe";
+  QString exe;
+  QDirIterator files(QDir(projectPath).filePath("build"),QStringList{executableName},QDir::Files,QDirIterator::Subdirectories);
+  if(files.hasNext())exe=files.next();
+  if(exe.isEmpty()){appendOutput("[EVILWARE] Build succeeded, but "+executableName+" was not found under the build directory. Check the build output and CMake target settings.\n");message->setText("Build succeeded; executable location needs checking.");buildRunButton->setEnabled(true);return;}
   startProcess(exe,{},3);return;
  }
  appendOutput("\n[EVILWARE] Run completed successfully.\n");message->setText("Project finished successfully.");buildRunButton->setEnabled(true);
@@ -102,7 +102,5 @@ void ProjectWidget::buildOrRun(){
  if(projectKind==2){const QString page=QDir(projectPath).filePath("index.html");if(!QFileInfo::exists(page)){message->setText("index.html was not found.");return;}QDesktopServices::openUrl(QUrl::fromLocalFile(page));message->setText("Opened the web project in your default browser.");appendOutput("Opened "+page+" in the default browser.\n");return;}
  if(projectKind==1){QString python=QStandardPaths::findExecutable("python");QStringList args;if(python.isEmpty()){python=QStandardPaths::findExecutable("py");args<<"-3";}if(python.isEmpty()){message->setText("Python is not installed or not available on PATH. Use Plugin & Software Manager.");return;}args<<QDir(projectPath).filePath("main.py");startProcess(python,args,3);return;}
  const QString cmake=QStandardPaths::findExecutable("cmake");if(cmake.isEmpty()){message->setText("CMake is missing. Install it using Plugin & Software Manager, then retry.");return;}
- const bool compiler=!QStandardPaths::findExecutable("cl").isEmpty()||!QStandardPaths::findExecutable("g++").isEmpty()||!QStandardPaths::findExecutable("clang++").isEmpty();
- if(!compiler){message->setText("No C++ compiler detected. Install Visual Studio Build Tools (Desktop development with C++) or configure MinGW/Clang.");return;}
  startProcess(cmake,{"-S",projectPath,"-B",QDir(projectPath).filePath("build")},1);
 }

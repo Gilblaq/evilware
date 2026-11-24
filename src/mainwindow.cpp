@@ -279,7 +279,8 @@ QWidget* MainWindow::settingsPage(){
  auto *security=new QGroupBox("SECURITY & PRIVACY");auto *sv=new QVBoxLayout(security);
  auto *securityHint=new QLabel("API credentials are configured in LAMIA AI. EVILWARE will not silently execute commands, install dependencies or modify project files without an explicit action.");securityHint->setWordWrap(true);securityHint->setObjectName("bodyText");sv->addWidget(securityHint);v->addWidget(security);
  auto *save=new QPushButton("Save and apply all settings");save->setObjectName("primaryButton");v->addWidget(save,0,Qt::AlignLeft);
- connect(save,&QPushButton::clicked,w,[this,&prefs,ownerName,ownerEmail,ownerRole,theme,background,fontSize,accentColor,defaultShell,autosave,confirm,notifications]{
+ connect(save,&QPushButton::clicked,w,[this,ownerName,ownerEmail,ownerRole,theme,background,fontSize,accentColor,defaultShell,autosave,confirm,notifications]{
+  QSettings prefs("EVILWARE","TheUnholyCore3");
   prefs.setValue("owner/name",ownerName->text().trimmed());prefs.setValue("owner/email",ownerEmail->text().trimmed());prefs.setValue("owner/role",ownerRole->text().trimmed());
   prefs.setValue("appearance/theme",theme->currentText());prefs.setValue("appearance/background",background->currentText());prefs.setValue("appearance/accent",accentColor->name());prefs.setValue("appearance/fontSize",fontSize->value());
   prefs.setValue("application/defaultShell",defaultShell->currentText());prefs.setValue("application/autosave",autosave->isChecked());prefs.setValue("security/confirmDestructive",confirm->isChecked());prefs.setValue("application/notifications",notifications->isChecked());prefs.sync();

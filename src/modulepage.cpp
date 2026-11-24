@@ -54,11 +54,11 @@ ModulePage::ModulePage(const QString &name,const QString &description,const QStr
  connect(process,&QProcess::readyReadStandardOutput,this,[process,append]{append(QString::fromLocal8Bit(process->readAllStandardOutput()));});
  connect(process,&QProcess::readyReadStandardError,this,[process,append]{append(QString::fromLocal8Bit(process->readAllStandardError()));});
  connect(process,qOverload<int,QProcess::ExitStatus>(&QProcess::finished),this,[append](int code,QProcess::ExitStatus state){append(QString("\n[Process %1, exit code %2]").arg(state==QProcess::NormalExit?"finished":"crashed").arg(code));});
+ connect(process,&QProcess::errorOccurred,this,[append](QProcess::ProcessError){append("[Process could not start. Check that the selected tool is installed and available on PATH.]");});
  auto run=[this,process,output,append](const QString &program,const QStringList &args){
   if(process->state()!=QProcess::NotRunning){append("[A command is already running.]");return;}
   output->clear();append("> "+program+" "+args.join(" "));
   process->start(program,args);
-  if(!process->waitForStarted(1500))append("[Could not start the tool. Check that it is installed and available on PATH.]");
  };
  auto addButton=[buttons](const QString &label,const std::function<void()> &action,bool primary=false){
   auto *b=new QPushButton(label);if(primary)b->setObjectName("primaryButton");buttons->addWidget(b);QObject::connect(b,&QPushButton::clicked,b,action);
@@ -137,11 +137,12 @@ ModulePage::ModulePage(const QString &name,const QString &description,const QStr
   });
   addButton("SQLite version",[run]{run("sqlite3",{"--version"});});
  }else if(name=="AI Lab"){
-  target->setPlaceholderText("Optional model name, e.g. llama3.2");
+  target->setPlaceholderText("Local Ollama model name, e.g. llama3.2");
+  auto *prompt=new QLineEdit;prompt->setPlaceholderText("Enter a prompt to send to the selected local model");toolsLayout->addWidget(prompt);
   addButton("Ollama version",[run]{run("ollama",{"--version"});},true);
   addButton("List local models",[run]{run("ollama",{"list"});});
   addButton("Running models",[run]{run("ollama",{"ps"});});
-  addButton("Run model",[run,target,append]{QString model=target->text().trimmed();if(!QRegularExpression("^[A-Za-z0-9._:-]{1,100}$").match(model).hasMatch()){append("Enter a valid local Ollama model tag.");return;}run("ollama",{"run",model});});
+  addButton("Send prompt",[run,target,prompt,append]{QString model=target->text().trimmed();QString text=prompt->text().trimmed();if(!QRegularExpression("^[A-Za-z0-9._:-]{1,100}$").match(model).hasMatch()){append("Enter a valid local Ollama model tag.");return;}if(text.isEmpty()){append("Enter a prompt first.");return;}run("ollama",{"run",model,text});});
  }else if(name=="Docker & DevOps"){
   addButton("Docker version",[run]{run("docker",{"version"});},true);
   addButton("Containers",[run]{run("docker",{"ps","-a"});});

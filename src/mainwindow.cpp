@@ -8,6 +8,7 @@
 #include "startupwidget.h"
 #include "systeminfo.h"
 #include "systemmonitorwidget.h"
+#include "lamiaaiwidget.h"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QGridLayout>
@@ -93,7 +94,7 @@ MainWindow::MainWindow(QWidget *p):QMainWindow(p){
  addModule("Digital Forensics","Evidence-handling workspace for lawful incident response and forensic learning.",{"Case notes and evidence register","File hash calculation and verification","Timeline and artifact review workflows"},{"Autopsy","FTK Imager","Python"},"FOUNDATION / IN DEVELOPMENT"); // 09
  addModule("Reverse Engineering","Binary inspection and software analysis workspace for authorized research.",{"File metadata and hash inspection","Strings and PE metadata workflows","Disassembly and debugging tool launch points"},{"Ghidra","x64dbg","Detect It Easy"},"FOUNDATION / IN DEVELOPMENT"); // 10
  addModule("Database Studio","Database connection and query workspace for development and administration.",{"Connection profiles (planned)","SQL editor and query execution (planned)","Schema browsing and export (planned)"},{"SQLite","PostgreSQL","MySQL / MariaDB"},"FOUNDATION / IN DEVELOPMENT"); // 11
- addModule("AI Lab","Local and hosted AI development workspace with model and API integrations.",{"Model endpoint configuration (planned)","Prompt and chat workbench (planned)","Local model runtime integration (planned)"},{"Ollama","Python","API provider credentials"},"FOUNDATION / IN DEVELOPMENT"); // 12
+ addPage(new LamiaAIWidget);                    // 12 — LAMIA AI provider and chat workspace
  addModule("Docker & DevOps","Container, build and delivery workspace for software projects.",{"Docker environment checks","Container and image workflows (planned)","Compose and CI/CD helpers (planned)"},{"Docker Desktop","WSL 2","Git"},"FOUNDATION / IN DEVELOPMENT"); // 13
  addModule("Cloud Manager","A unified place to configure and work with cloud provider command-line tools.",{"Provider profile management (planned)","CLI status and account checks (planned)","Deployment workflow helpers (planned)"},{"Azure CLI","AWS CLI","Google Cloud CLI"},"FOUNDATION / IN DEVELOPMENT"); // 14
  addPage(filePage());                           // 15 File Manager

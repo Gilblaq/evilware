@@ -14,6 +14,7 @@
 
 int main(int argc,char *argv[]){
  QApplication app(argc,argv);
+ QApplication::setWindowIcon(QIcon(":/assets/evilware_app_icon.png"));
  QApplication::setApplicationName("EVILWARE");
  QApplication::setOrganizationName("EVILWARE");
  QApplication::setApplicationVersion("3.0.0");

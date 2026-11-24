@@ -28,6 +28,8 @@
 #include <QComboBox>
 #include <QFormLayout>
 #include <QGroupBox>
+#include <QFileDialog>
+#include <QInputDialog>
 
 MainWindow::MainWindow(QWidget *p):QMainWindow(p){
  setWindowTitle("EVILWARE | The Unholy Core 3");
@@ -148,9 +150,46 @@ QWidget* MainWindow::filePage(){
  auto *model=new QFileSystemModel(w);model->setRootPath(QDir::homePath());auto *tree=new QTreeView;tree->setModel(model);tree->setRootIndex(model->index(QDir::homePath()));tree->setColumnWidth(0,380);v->addWidget(tree,1);return w;
 }
 QWidget* MainWindow::gitPage(){
- auto *w=new QWidget;auto *v=new QVBoxLayout(w);v->setContentsMargins(24,20,24,20);auto *title=new QLabel("Git Manager");title->setObjectName("pageTitle");v->addWidget(title);
- auto *label=new QLabel("Run Git commands in a selected working folder.");label->setObjectName("mutedText");v->addWidget(label);auto *path=new QLineEdit(QDir::homePath());v->addWidget(path);auto *out=new QPlainTextEdit;out->setReadOnly(true);v->addWidget(out,1);
- auto *row=new QHBoxLayout;for(QString cmd:{"status","log --oneline -10","branch --all"}){auto *b=new QPushButton("git "+cmd);row->addWidget(b);connect(b,&QPushButton::clicked,w,[path,out,cmd,w]{auto *p=new QProcess(w);p->setWorkingDirectory(path->text());p->start("git",cmd.split(' '));QObject::connect(p,&QProcess::readyReadStandardOutput,[p,out]{out->appendPlainText(QString::fromLocal8Bit(p->readAllStandardOutput()));});QObject::connect(p,&QProcess::readyReadStandardError,[p,out]{out->appendPlainText(QString::fromLocal8Bit(p->readAllStandardError()));});QObject::connect(p,qOverload<int,QProcess::ExitStatus>(&QProcess::finished),p,&QObject::deleteLater);});}v->addLayout(row);return w;
+ auto *w=new QWidget;auto *v=new QVBoxLayout(w);v->setContentsMargins(24,20,24,20);v->setSpacing(10);
+ auto *title=new QLabel("Git Manager");title->setObjectName("pageTitle");v->addWidget(title);
+ auto *label=new QLabel("Run explicit Git operations in a selected working folder. Fetch, pull, push, staging and commits only run when you click their controls.");label->setObjectName("mutedText");label->setWordWrap(true);v->addWidget(label);
+ auto *path=new QLineEdit(QDir::homePath());auto *browse=new QPushButton("Choose repository…");auto *pathRow=new QHBoxLayout;pathRow->addWidget(path,1);pathRow->addWidget(browse);v->addLayout(pathRow);
+ auto *status=new QLabel("Ready");status->setObjectName("mutedText");v->addWidget(status);
+ auto *out=new QPlainTextEdit;out->setReadOnly(true);out->setPlaceholderText("Git command output appears here…");v->addWidget(out,1);
+ auto runGit=[w,path,out,status](const QStringList &args){
+  const QString folder=QDir::cleanPath(path->text().trimmed());
+  if(folder.isEmpty()||!QDir(folder).exists()){status->setText("Choose an existing repository folder.");return;}
+  auto *process=new QProcess(w);process->setWorkingDirectory(folder);
+  out->appendPlainText("\n> git "+args.join(" "));
+  status->setText("Running Git…");
+  QObject::connect(process,&QProcess::readyReadStandardOutput,[process,out]{const auto data=process->readAllStandardOutput();if(!data.isEmpty())out->appendPlainText(QString::fromLocal8Bit(data));});
+  QObject::connect(process,&QProcess::readyReadStandardError,[process,out]{const auto data=process->readAllStandardError();if(!data.isEmpty())out->appendPlainText(QString::fromLocal8Bit(data));});
+  QObject::connect(process,qOverload<int,QProcess::ExitStatus>(&QProcess::finished),w,[process,status,out](int code,QProcess::ExitStatus state){
+   const bool ok=state==QProcess::NormalExit&&code==0;status->setText(ok?"Completed successfully":QString("Git failed (exit %1)").arg(code));
+   const auto a=process->readAllStandardOutput(),b=process->readAllStandardError();if(!a.isEmpty())out->appendPlainText(QString::fromLocal8Bit(a));if(!b.isEmpty())out->appendPlainText(QString::fromLocal8Bit(b));
+   process->deleteLater();
+  });
+  QObject::connect(process,&QProcess::errorOccurred,w,[process,status,out](QProcess::ProcessError){status->setText("Git could not start");out->appendPlainText("[EVILWARE] Git was not found. Install Git and ensure git.exe is on PATH.");process->deleteLater();});
+  process->start("git",args);
+ };
+ connect(browse,&QPushButton::clicked,w,[path,w]{const QString folder=QFileDialog::getExistingDirectory(w,"Choose Git repository",path->text());if(!folder.isEmpty())path->setText(folder);});
+ auto *grid=new QGridLayout;grid->setSpacing(7);
+ const QList<QPair<QString,QStringList>> actions={
+  {"Status",{"status","--short","--branch"}},
+  {"Recent commits",{"log","--oneline","-15"}},
+  {"Branches",{"branch","--all"}},
+  {"Diff",{"diff","--"}},
+  {"Stage all changes",{"add","-A"}},
+  {"Fetch",{"fetch","--all","--prune"}},
+  {"Pull",{"pull","--ff-only"}},
+  {"Push",{"push"}}
+ };
+ for(int i=0;i<actions.size();++i){auto *button=new QPushButton(actions[i].first);grid->addWidget(button,i/4,i%4);connect(button,&QPushButton::clicked,w,[runGit,args=actions[i].second]{runGit(args);});}
+ auto *commit=new QPushButton("Commit staged changes");commit->setObjectName("primaryButton");
+ connect(commit,&QPushButton::clicked,w,[w,runGit]{bool ok=false;const QString message=QInputDialog::getText(w,"Git commit","Commit message:",QLineEdit::Normal,QString(),&ok);if(!ok)return;if(message.trimmed().isEmpty()){QMessageBox::warning(w,"Commit","Enter a non-empty commit message.");return;}runGit({"commit","-m",message});});
+ auto *refresh=new QPushButton("Refresh status");connect(refresh,&QPushButton::clicked,w,[runGit]{runGit({"status","--short","--branch"});});
+ auto *extra=new QHBoxLayout;extra->addWidget(commit);extra->addWidget(refresh);extra->addStretch();v->addLayout(grid);v->addLayout(extra);
+ return w;
 }
 QWidget* MainWindow::settingsPage(){
  auto*w=new QWidget;auto*v=new QVBoxLayout(w);v->setContentsMargins(24,20,24,20);v->setSpacing(14);

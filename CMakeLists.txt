@@ -5,9 +5,26 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
+
+find_package(Python3 REQUIRED COMPONENTS Interpreter)
+execute_process(
+  COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tools/generate_assets.py ${CMAKE_CURRENT_SOURCE_DIR}/assets
+  RESULT_VARIABLE EVILWARE_ASSET_RESULT
+  OUTPUT_VARIABLE EVILWARE_ASSET_OUTPUT
+  ERROR_VARIABLE EVILWARE_ASSET_ERROR
+)
+if(NOT EVILWARE_ASSET_RESULT EQUAL 0)
+  message(FATAL_ERROR "EVILWARE asset generation failed: ${EVILWARE_ASSET_ERROR}")
+endif()
+message(STATUS "${EVILWARE_ASSET_OUTPUT}")
+
+if(WIN32)
+  enable_language(RC)
+endif()
+
 find_package(Qt6 6.5 REQUIRED COMPONENTS Widgets)
 qt_standard_project_setup()
-qt_add_executable(EVILWARE WIN32
+set(EVILWARE_SOURCES
   src/main.cpp
   src/mainwindow.cpp
   src/mainwindow.h
@@ -31,8 +48,12 @@ qt_add_executable(EVILWARE WIN32
   src/startupwidget.h
   resources.qrc
 )
+if(WIN32)
+  list(APPEND EVILWARE_SOURCES src/evilware.rc)
+endif()
+qt_add_executable(EVILWARE WIN32 ${EVILWARE_SOURCES})
 target_link_libraries(EVILWARE PRIVATE Qt6::Widgets)
 if(WIN32)
-  target_link_libraries(EVILWARE PRIVATE psapi)
+  target_link_libraries(EVILWARE PRIVATE psapi crypt32)
 endif()
 install(TARGETS EVILWARE RUNTIME DESTINATION .)

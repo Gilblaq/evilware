@@ -57,7 +57,7 @@ EditorWidget::EditorWidget(QWidget *p):QWidget(p){
  auto *n=new QPushButton("New");auto *o=new QPushButton("Open");auto *folder=new QPushButton("Open Folder");auto *s=new QPushButton("Save");auto *sa=new QPushButton("Save as");auto *find=new QPushButton("Find");auto *replace=new QPushButton("Replace all");pathLabel=new QLabel("Untitled");
  bar->addWidget(n);bar->addWidget(o);bar->addWidget(folder);bar->addWidget(s);bar->addWidget(sa);bar->addWidget(find);bar->addWidget(replace);bar->addStretch();bar->addWidget(pathLabel);v->addLayout(bar);
  auto *splitter=new QSplitter(Qt::Horizontal);
- fileModel=new QFileSystemModel(this);fileModel->setRootPath(QDir::homePath());fileTree=new QTreeView;fileTree->setModel(fileModel);fileTree->setRootIndex(fileModel->index(QDir::homePath()));fileTree->setHeaderHidden(true);fileTree->setColumnWidth(0,220);fileTree->setMinimumWidth(170);splitter->addWidget(fileTree);
+ fileModel=new QFileSystemModel(this);fileModel->setRootPath(QDir::homePath());fileTree=new QTreeView;fileTree->setObjectName("projectExplorer");fileTree->setModel(fileModel);fileTree->setRootIndex(fileModel->index(QDir::homePath()));fileTree->setHeaderHidden(true);fileTree->setColumnWidth(0,220);fileTree->setMinimumWidth(170);splitter->addWidget(fileTree);
  edit=new QPlainTextEdit;edit->setLineWrapMode(QPlainTextEdit::NoWrap);edit->setObjectName("codeEditor");
  QFont font("Consolas");font.setStyleHint(QFont::Monospace);font.setPointSize(10);edit->setFont(font);edit->setTabStopDistance(4*edit->fontMetrics().horizontalAdvance(' '));
  splitter->addWidget(edit);splitter->setStretchFactor(0,0);splitter->setStretchFactor(1,1);splitter->setSizes({240,900});v->addWidget(splitter,1);

@@ -40,7 +40,7 @@ def line(buf, w, h, x0, y0, x1, y1, color, width=2):
                     buf[yy*w+xx]=color
 
 def polygon(buf,w,h,pts,color):
-    ymin=max(0,min(p[1] for p in pts)); ymax=min(h-1,max(p[1] for p in pts))
+    ymin=max(0,int(math.floor(min(p[1] for p in pts)))); ymax=min(h-1,int(math.ceil(max(p[1] for p in pts))))
     for y in range(ymin,ymax+1):
         xs=[]
         for i in range(len(pts)):

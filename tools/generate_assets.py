@@ -30,7 +30,7 @@ def blend(dst, src, a):
 
 def line(buf, w, h, x0, y0, x1, y1, color, width=2):
     dx,dy=x1-x0,y1-y0
-    steps=max(abs(dx),abs(dy),1)
+    steps=max(int(math.ceil(abs(dx))),int(math.ceil(abs(dy))),1)
     r=max(0,width//2)
     for i in range(steps+1):
         x=round(x0+dx*i/steps); y=round(y0+dy*i/steps)

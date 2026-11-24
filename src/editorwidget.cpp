@@ -20,6 +20,7 @@
 #include <QTreeView>
 #include <QSplitter>
 #include <QFileInfo>
+#include <QDir>
 
 class CodeHighlighter final : public QSyntaxHighlighter {
 public:

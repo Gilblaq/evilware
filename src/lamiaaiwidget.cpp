@@ -169,12 +169,14 @@ LamiaAIWidget::LamiaAIWidget(QWidget *parent) : QWidget(parent), network(new QNe
     const QByteArray key = unprotectKey(protectedValue);
     if (!key.isEmpty()) apiKey->setText(QString::fromUtf8(key));
     apiKey->setPlaceholderText("API key (optional for local compatible endpoints)");
-    sendButton->setEnabled(true);
+    sendButton->setEnabled(false);
     if (provider->currentIndex() == 1 && endpoint->text().isEmpty())
         endpoint->setText("https://api.openai.com");
     status->setText("Ready to connect. Save your provider settings, then test the connection.");
 
     connect(provider, qOverload<int>(&QComboBox::currentIndexChanged), this, [this](int index) {
+        connected = false;
+        sendButton->setEnabled(false);
         if (index == 0) {
             if (endpoint->text().isEmpty() || endpoint->text().startsWith("https://api.openai.com"))
                 endpoint->setText("http://127.0.0.1:11434");
@@ -192,6 +194,10 @@ LamiaAIWidget::LamiaAIWidget(QWidget *parent) : QWidget(parent), network(new QNe
         }
     });
     apiKey->setEnabled(provider->currentIndex() == 1);
+    auto resetConnection = [this] { connected = false; sendButton->setEnabled(false); };
+    connect(endpoint, &QLineEdit::textChanged, this, resetConnection);
+    connect(model, &QComboBox::currentTextChanged, this, resetConnection);
+    connect(apiKey, &QLineEdit::textChanged, this, resetConnection);
     connect(save, &QPushButton::clicked, this, [this] {
         if (saveConfiguration())
             status->setText("Configuration saved. Test the connection to activate Lamia.");
@@ -290,6 +296,7 @@ void LamiaAIWidget::testConnection() {
             }
         }
         if (model->count() == 0) model->addItem(selectedProvider() == "ollama" ? "llama3.2" : "gpt-4o-mini");
+        connected = true;
         status->setText("Connected successfully. Choose an available model and start chatting.");
         sendButton->setEnabled(true);
     });
@@ -301,6 +308,10 @@ void LamiaAIWidget::appendMessage(const QString &speaker, const QString &message
 
 void LamiaAIWidget::sendMessage() {
     if (busy) return;
+    if (!connected) {
+        status->setText("Connect and test your selected AI provider before sending a message.");
+        return;
+    }
     const QString userText = prompt->toPlainText().trimmed();
     if (userText.isEmpty()) return;
     if (endpoint->text().trimmed().isEmpty() || model->currentText().trimmed().isEmpty()) {
@@ -315,7 +326,10 @@ void LamiaAIWidget::sendMessage() {
 
     prompt->clear();
     appendMessage("YOU", userText);
-    QJsonArray messages = history;
+    QJsonArray messages;
+    messages.append(QJsonObject{{"role", "system"}, {"content",
+        "You are Lamia AI, the assistant inside EVILWARE. Help with programming, debugging, project planning, documentation, terminal explanations, databases and defensive cybersecurity. Be accurate and admit uncertainty. Never claim to execute commands or change files. Explain risks and ask for confirmation before recommending destructive operations."}});
+    for (const auto &entry : history) messages.append(entry);
     messages.append(QJsonObject{{"role", "user"}, {"content", userText}});
     QJsonObject payload{
         {"model", model->currentText().trimmed()},
@@ -339,6 +353,8 @@ void LamiaAIWidget::sendMessage() {
         busy = false;
         sendButton->setEnabled(true);
         if (error != QNetworkReply::NoError) {
+            connected = false;
+            sendButton->setEnabled(false);
             status->setText("Request failed: " + errorText);
             appendMessage("SYSTEM", "The provider request failed. Verify your endpoint, model name, network connection and API key.");
             return;

@@ -8,7 +8,7 @@ permissions:
 
 # Keep only the newest main-branch validation run active.
 concurrency:
-  group: evilware-windows-${{ github.ref }}
+  group: evilware-windows-v2-${{ github.ref }}
   cancel-in-progress: true
 jobs:
   build:

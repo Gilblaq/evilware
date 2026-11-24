@@ -11,6 +11,10 @@ This is the active engineering checklist. A feature is only marked complete when
 - [x] Basic source editor, file browser, Git status/log/branch actions, system monitor and winget catalogue.
 - [x] Specialist module foundations and initial local diagnostic actions.
 - [x] Owner appearance settings are stored with QSettings and reapplied at startup.
+- [x] Removed the animated snake from splash and access screens.
+- [x] Added a standard-library asset generator for original offline artwork and a multi-resolution Windows application icon.
+- [x] Replaced legacy Qt standard navigation glyphs with a consistent symbol-based navigation treatment.
+- [x] Expanded appearance settings and introduced an application-wide palette/style application path; runtime verification pending.
 - [x] Terminal output insertion now preserves text being typed; stop/clear controls and process-start errors added.
 - [ ] Terminal remains a QProcess/stdin command console, not a full VT/ConPTY terminal emulator; interactive TTY applications and terminal escape sequences are not yet supported.
 - [ ] No end-to-end manual runtime validation on clean Windows 10/11 machines has been recorded.
@@ -36,7 +40,9 @@ This is the active engineering checklist. A feature is only marked complete when
 - [x] Persist owner profile fields and theme/background choices.
 - [x] Reapply saved appearance on application startup.
 - [x] Prevent repeated saves from appending duplicate theme stylesheets.
-- [ ] Add font-size, reduced-motion, default-shell, notifications and configuration backup/restore.
+- [x] Add font-size, default-shell, notifications and confirmation preferences to Settings Center.
+- [ ] Add reduced-motion and configuration backup/restore.
+- [ ] Verify generated assets and Windows executable icon in CI and on a clean Windows machine.
 - [ ] Test save/restart/restore behavior on Windows.
 
 ## Milestone 4 — Twenty workspace audit

@@ -2,6 +2,7 @@
 #include <QComboBox>
 #include <QPlainTextEdit>
 #include <QTextCursor>
+#include <QTextBlock>
 #include <QKeyEvent>
 #include <QProcess>
 #include <QVBoxLayout>
@@ -14,16 +15,16 @@ class TerminalConsole final:public QPlainTextEdit{
 public:
  explicit TerminalConsole(QWidget*p=nullptr):QPlainTextEdit(p){setReadOnly(false);setUndoRedoEnabled(false);setLineWrapMode(QPlainTextEdit::NoWrap);setFont(QFont("Consolas",10));}
  std::function<void(const QString&)> submit;QStringList history;int historyIndex=0;
- void writeOutput(const QString&s){QTextCursor c=document()->end();c.insertText(s);setTextCursor(c);ensureCursorVisible();}
+ void writeOutput(const QString&s){QTextCursor c(document());c.movePosition(QTextCursor::End);c.insertText(s);setTextCursor(c);ensureCursorVisible();}
 protected:
  void keyPressEvent(QKeyEvent*e)override{
-  if(e->key()==Qt::Key_Return||e->key()==Qt::Key_Enter){QTextCursor c=document()->end();c.movePosition(QTextCursor::StartOfBlock);QString cmd=c.block().text();QTextCursor z=document()->end();z.insertText("\n");setTextCursor(z);if(!cmd.trimmed().isEmpty()){history.append(cmd);historyIndex=history.size();}if(submit)submit(cmd);return;}
+  if(e->key()==Qt::Key_Return||e->key()==Qt::Key_Enter){QTextCursor c(document());c.movePosition(QTextCursor::End);c.movePosition(QTextCursor::StartOfBlock);QString cmd=c.block().text();QTextCursor z(document());z.movePosition(QTextCursor::End);z.insertText("\n");setTextCursor(z);if(!cmd.trimmed().isEmpty()){history.append(cmd);historyIndex=history.size();}if(submit)submit(cmd);return;}
   if(e->key()==Qt::Key_Backspace&&textCursor().position()<=document()->lastBlock().position())return;
   if(e->key()==Qt::Key_Up&&!history.isEmpty()){historyIndex=qMax(0,historyIndex-1);replaceLine(history.value(historyIndex));return;}
   if(e->key()==Qt::Key_Down&&!history.isEmpty()){historyIndex=qMin(history.size(),historyIndex+1);replaceLine(history.value(historyIndex));return;}
-  QTextCursor c=textCursor();if(c.position()<document()->lastBlock().position()){c.movePosition(QTextCursor::End);setTextCursor(c);}QPlainTextEdit::keyPressEvent(e);
+  QTextCursor c=textCursor();QTextCursor lineStart(document());lineStart.movePosition(QTextCursor::End);lineStart.movePosition(QTextCursor::StartOfBlock);if(c.position()<lineStart.position()){QTextCursor end(document());end.movePosition(QTextCursor::End);setTextCursor(end);}QPlainTextEdit::keyPressEvent(e);
  }
- void replaceLine(const QString&s){QTextCursor c=document()->end();c.movePosition(QTextCursor::StartOfBlock,QTextCursor::KeepAnchor);c.insertText(s);setTextCursor(document()->end());}
+ void replaceLine(const QString&s){QTextCursor c(document());c.movePosition(QTextCursor::End);c.movePosition(QTextCursor::StartOfBlock,QTextCursor::KeepAnchor);c.insertText(s);QTextCursor end(document());end.movePosition(QTextCursor::End);setTextCursor(end);}
 };
 TerminalWidget::TerminalWidget(QWidget*p):QWidget(p),proc(new QProcess(this)){
  auto*v=new QVBoxLayout(this);auto*bar=new QHBoxLayout;shell=new QComboBox;shell->addItems({"PowerShell","Command Prompt","WSL (if installed)"});auto*restart=new QPushButton("Restart shell");status=new QLabel("Shell stopped");bar->addWidget(new QLabel("Environment"));bar->addWidget(shell);bar->addWidget(restart);bar->addWidget(status);v->addLayout(bar);

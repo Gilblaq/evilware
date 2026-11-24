@@ -10,7 +10,7 @@ This document is the source-of-truth checklist for taking EVILWARE from its curr
 - [x] Core foundations exist for project creation, source editing, local terminals, basic network diagnostics, file browsing, Git commands and package installation handoff.
 - [ ] Specialist workspaces are not all complete; each must be implemented and tested before being advertised as finished.
 
-## Recent development\n\n- [x] Added initial local diagnostic actions to specialist modules: network diagnostics, HTTP/TLS header checks, SHA-256 evidence hashing, static file metadata/strings inspection, SQLite table listing, Ollama model commands, Docker inspection and cloud CLI status checks.\n- [x] Added a user guide, security policy and clearly labelled privacy-notice draft.\n- [ ] Integrate the exact user-supplied startup/workspace artwork. The current app still uses drawn splash/access artwork.\n- [ ] Run the latest CI build and resolve any compiler or runtime regressions from the specialist utility work.\n\n## Release milestones
+## Recent development\n\n- [x] Added initial local diagnostic actions to specialist modules: network diagnostics, HTTP/TLS header checks, SHA-256 evidence hashing, static file metadata/strings inspection, SQLite table listing, Ollama model commands, Docker inspection and cloud CLI status checks.\n- [x] Added a user guide, security policy and clearly labelled privacy-notice draft.\n- [x] Reuse the original watermark-free EVILWARE artwork already stored in the project for the startup/loading screen, local access screen and workspace backdrop; retain the animated red serpent overlay.\n- [ ] Run the latest CI build and resolve any compiler or runtime regressions from the specialist utility work.\n\n## Release milestones
 
 ### 1. Package and dependency management — in progress
 - [x] Curated initial catalogue of developer and security tools.
@@ -42,7 +42,7 @@ This document is the source-of-truth checklist for taking EVILWARE from its curr
 - [ ] Automated tests plus manual Windows 10/11 validation.
 
 ### 4. Product and release experience
-- [ ] Finalize startup artwork using the user's supplied source images.
+- [x] Apply the original watermark-free EVILWARE artwork resource to startup, access and workspace surfaces; verify composition on Windows before release.
 - [ ] Finalize product icon, installer metadata and versioning.
 - [ ] First-run setup and clear supported-system requirements.
 - [ ] Help, onboarding, troubleshooting and release notes.

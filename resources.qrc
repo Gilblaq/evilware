@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/assets">
-    <file>assets/evilware_reverse_engineering_banner.jpg</file>
+    <file>assets/evilware_core_banner.png</file>
+    <file>assets/evilware_app_icon.png</file>
   </qresource>
 </RCC>

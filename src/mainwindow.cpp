@@ -30,6 +30,7 @@
 #include <QGroupBox>
 #include <QFileDialog>
 #include <QInputDialog>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *p):QMainWindow(p){
  setWindowTitle("EVILWARE | The Unholy Core 3");

@@ -8,6 +8,7 @@
 #include <QStackedWidget>
 #include <QDebug>
 #include <QTreeView>
+#include <QTabWidget>
 
 int main(int argc,char *argv[]){
  QApplication app(argc,argv);
@@ -28,6 +29,11 @@ int main(int argc,char *argv[]){
    return 2;
   }
   auto *projectExplorer=testWindow.findChild<QTreeView*>("projectExplorer");
+  const auto terminalTabWidgets=testWindow.findChildren<QTabWidget*>("terminalTabs");
+  if(terminalTabWidgets.size()!=2 || terminalTabWidgets[0]->count()<1 || terminalTabWidgets[1]->count()<1){
+   qCritical() << "SELF-TEST FAILED: Windows and Linux terminal tab containers are missing";
+   return 6;
+  }
   if(!projectExplorer){
    qCritical() << "SELF-TEST FAILED: Code Studio project explorer is missing";
    return 5;
@@ -45,7 +51,7 @@ int main(int argc,char *argv[]){
     return 4;
    }
   }
-  qInfo() << "SELF-TEST PASSED: all 20 workspaces construct, navigation maps correctly and Code Studio project explorer exists";
+  qInfo() << "SELF-TEST PASSED: all 20 workspaces construct, navigation maps correctly, Code Studio explorer exists and both terminal tab containers are initialized";
   return 0;
  }
 

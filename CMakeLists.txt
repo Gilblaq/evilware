@@ -51,7 +51,9 @@ set(EVILWARE_SOURCES
   resources.qrc
 )
 if(WIN32)
-  list(APPEND EVILWARE_SOURCES src/evilware.rc)
+  file(TO_NATIVE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/assets/evilware_app_icon.ico" EVILWARE_ICON_NATIVE)
+  configure_file(src/evilware.rc.in "${CMAKE_CURRENT_BINARY_DIR}/evilware.rc" @ONLY)
+  list(APPEND EVILWARE_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/evilware.rc")
 endif()
 qt_add_executable(EVILWARE WIN32 ${EVILWARE_SOURCES})
 target_link_libraries(EVILWARE PRIVATE Qt6::Widgets Qt6::Network)

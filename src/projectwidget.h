@@ -6,6 +6,7 @@ class QLineEdit; class QComboBox; class QLabel; class QPushButton; class QPlainT
 class ProjectWidget:public QWidget{
  Q_OBJECT
 public: explicit ProjectWidget(QWidget *parent=nullptr);
+signals: void projectCreated(const QString &path);
 private slots: void createProject(); void chooseFolder(); void buildOrRun();
 private:
  QLineEdit *name,*location; QComboBox *kind; QLabel *message;

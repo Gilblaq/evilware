@@ -7,6 +7,7 @@
 #include <QFileDialog>
 #include <QFile>
 #include <QMessageBox>
+#include <QInputDialog>
 #include <QSyntaxHighlighter>
 #include <QTextCharFormat>
 #include <QTextDocument>
@@ -48,17 +49,22 @@ private:
 
 EditorWidget::EditorWidget(QWidget *p):QWidget(p){
  auto *v=new QVBoxLayout(this);auto *bar=new QHBoxLayout;
- auto *n=new QPushButton("New");auto *o=new QPushButton("Open");auto *s=new QPushButton("Save");auto *sa=new QPushButton("Save as");pathLabel=new QLabel("Untitled");
- bar->addWidget(n);bar->addWidget(o);bar->addWidget(s);bar->addWidget(sa);bar->addStretch();bar->addWidget(pathLabel);v->addLayout(bar);
+ auto *n=new QPushButton("New");auto *o=new QPushButton("Open");auto *s=new QPushButton("Save");auto *sa=new QPushButton("Save as");auto *find=new QPushButton("Find");auto *replace=new QPushButton("Replace all");pathLabel=new QLabel("Untitled");
+ bar->addWidget(n);bar->addWidget(o);bar->addWidget(s);bar->addWidget(sa);bar->addWidget(find);bar->addWidget(replace);bar->addStretch();bar->addWidget(pathLabel);v->addLayout(bar);
  edit=new QPlainTextEdit;edit->setLineWrapMode(QPlainTextEdit::NoWrap);edit->setObjectName("codeEditor");
  QFont font("Consolas");font.setStyleHint(QFont::Monospace);font.setPointSize(10);edit->setFont(font);edit->setTabStopDistance(4*edit->fontMetrics().horizontalAdvance(' '));
  v->addWidget(edit,1);
  statusLabel=new QLabel("Line 1  ·  Column 1  ·  Plain text");statusLabel->setObjectName("mutedText");v->addWidget(statusLabel);
  highlighter=new CodeHighlighter(edit->document());
  connect(n,&QPushButton::clicked,this,&EditorWidget::newFile);connect(o,&QPushButton::clicked,this,&EditorWidget::openFile);connect(s,&QPushButton::clicked,this,&EditorWidget::saveFile);connect(sa,&QPushButton::clicked,this,&EditorWidget::saveAs);
+ connect(find,&QPushButton::clicked,this,[this]{bool ok=false;const QString term=QInputDialog::getText(this,"Find","Text to find:",QLineEdit::Normal,QString(),&ok);if(!ok||term.isEmpty())return;QTextCursor found=edit->document()->find(term,edit->textCursor());if(found.isNull())found=edit->document()->find(term);if(found.isNull())QMessageBox::information(this,"Find","No matching text was found.");else edit->setTextCursor(found);});
+ connect(replace,&QPushButton::clicked,this,[this]{bool ok=false;const QString term=QInputDialog::getText(this,"Replace all","Text to find:",QLineEdit::Normal,QString(),&ok);if(!ok||term.isEmpty())return;const QString replacement=QInputDialog::getText(this,"Replace all","Replace with:",QLineEdit::Normal,QString(),&ok);if(!ok)return;QString text=edit->toPlainText();const int count=text.count(term);if(count==0){QMessageBox::information(this,"Replace all","No matching text was found.");return;}text.replace(term,replacement);edit->setPlainText(text);edit->document()->setModified(true);QMessageBox::information(this,"Replace all",QString("Replaced %1 occurrence(s).").arg(count));});
+
  connect(edit,&QPlainTextEdit::cursorPositionChanged,this,&EditorWidget::updateStatus);connect(edit->document(),&QTextDocument::modificationChanged,this,[this](bool dirty){setWindowModified(dirty);pathLabel->setText((currentPath.isEmpty()?QString("Untitled"):currentPath)+(dirty?"  •":""));});
  auto shortcut=[this](const QKeySequence &key,auto slot){auto *sc=new QShortcut(key,this);connect(sc,&QShortcut::activated,this,slot);};
  shortcut(QKeySequence::New,&EditorWidget::newFile);shortcut(QKeySequence::Open,&EditorWidget::openFile);shortcut(QKeySequence::Save,&EditorWidget::saveFile);shortcut(QKeySequence("Ctrl+Shift+S"),&EditorWidget::saveAs);
+ auto *findShortcut=new QShortcut(QKeySequence::Find,this);connect(findShortcut,&QShortcut::activated,find,&QPushButton::click);
+ auto *replaceShortcut=new QShortcut(QKeySequence("Ctrl+H"),this);connect(replaceShortcut,&QShortcut::activated,replace,&QPushButton::click);
 }
 bool EditorWidget::maybeSave(){
  if(!edit->document()->isModified())return true;
@@ -81,7 +87,7 @@ void EditorWidget::saveFile(){if(currentPath.isEmpty()){saveAs();return;}writeFi
 void EditorWidget::saveAs(){QString p=QFileDialog::getSaveFileName(this,"Save source file",currentPath);if(!p.isEmpty())writeFile(p);}
 void EditorWidget::applyLanguageHighlighting(){
  QString ext=currentPath.section('.',-1).toLower();QString lang="plain";
- if(ext=="py")lang="python";else if(ext=="cpp"||ext=="h"||ext=="hpp"||ext=="c"||ext=="js"||ext=="ts"||ext=="java"||ext=="cs")lang="code";
+ if(ext=="py")lang="python";else if(ext=="cpp"||ext=="h"||ext=="hpp"||ext=="c"||ext=="js"||ext=="ts"||ext=="java"||ext=="cs"||ext=="html"||ext=="css"||ext=="json"||ext=="xml")lang="code";
  static_cast<CodeHighlighter*>(highlighter)->setLanguage(lang);
 }
 void EditorWidget::updateStatus(){

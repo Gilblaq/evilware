@@ -318,10 +318,6 @@ void LamiaAIWidget::sendMessage() {
         status->setText("Configure a provider URL and model first.");
         return;
     }
-    if (selectedProvider() == "openai" && apiKey->text().trimmed().isEmpty()) {
-        status->setText("Enter an API key for your hosted provider, then save the configuration.");
-        return;
-    }
     if (!saveConfiguration()) return;
 
     prompt->clear();

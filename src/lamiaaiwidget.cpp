@@ -365,7 +365,7 @@ void LamiaAIWidget::sendMessage() {
         }
         history.append(QJsonObject{{"role", "user"}, {"content", userText}});
         history.append(QJsonObject{{"role", "assistant"}, {"content", answer}});
-        while (history.size() > 24) history.removeFirst();
+        while (history.size() > 24) history.removeAt(0);
         appendMessage("LAMIA", answer);
         status->setText("Connected · " + model->currentText());
     });

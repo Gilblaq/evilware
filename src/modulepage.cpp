@@ -16,6 +16,9 @@
 #include <QRegularExpression>
 #include <QDateTime>
 #include <QDir>
+#include <QCoreApplication>
+#include <QDesktopServices>
+#include <QUrl>
 #include <functional>
 
 ModulePage::ModulePage(const QString &name,const QString &description,const QStringList &capabilities,const QStringList &dependencies,const QString &status,QWidget *parent):QWidget(parent){
@@ -153,6 +156,18 @@ ModulePage::ModulePage(const QString &name,const QString &description,const QStr
   addButton("AWS CLI",[run]{run("aws",{"--version"});});
   addButton("Google Cloud CLI",[run]{run("gcloud",{"version"});});
   addButton("Azure account status",[run]{run("az",{"account","show","--output","table"});});
+ }else if(name=="Documentation"){
+  auto openGuide=[output,append](const QString &relativePath){
+   const QString path=QDir(QCoreApplication::applicationDirPath()).filePath(relativePath);
+   if(!QFileInfo::exists(path)){append("Guide is not included in this installation: "+relativePath);return;}
+   if(!QDesktopServices::openUrl(QUrl::fromLocalFile(path)))append("Could not open guide: "+path);
+  };
+  addButton("User guide",[openGuide]{openGuide("docs/USER_GUIDE.md");},true);
+  addButton("Engineering roadmap",[openGuide]{openGuide("ROADMAP.md");});
+  addButton("Testing matrix",[openGuide]{openGuide("TESTING.md");});
+  addButton("Build guide",[openGuide]{openGuide("BUILD.md");});
+  addButton("Installation guide",[openGuide]{openGuide("INSTALLATION.md");});
+  addButton("Security policy",[openGuide]{openGuide("SECURITY.md");});
  }else{
   addButton("Check tool availability",[run]{run("git",{"--version"});},true);
  }

@@ -84,7 +84,7 @@ MainWindow::MainWindow(QWidget *p):QMainWindow(p){
  addPage(plugins);                              // 17 Plugin Store
  addPage(new SystemMonitorWidget);               // 18 — read-only process inspection
  addPage(settingsPage());                       // 19 Settings
- addModule("Documentation","Product guides, module references, setup instructions and troubleshooting.",{"Build and installation guide","Module status and dependency references","User documentation and release notes (planned)"},{"EVILWARE documentation","Plugin Store"},"DOCUMENTATION FOUNDATION"); // 20
+ addModule("Documentation","Product guides, module references, setup instructions and troubleshooting.",{"Open user guide, roadmap and test matrix","Open build and installation guides","Open security policy"},{"Bundled EVILWARE documentation"},"AVAILABLE / LOCAL GUIDES"); // 20
 
  connect(nav,&QListWidget::currentRowChanged,this,&MainWindow::showPage);nav->setCurrentRow(0);
  setStyleSheet(R"(

@@ -23,7 +23,7 @@
 ProjectWidget::ProjectWidget(QWidget*p):QWidget(p){
  auto*v=new QVBoxLayout(this);auto*form=new QFormLayout;
  name=new QLineEdit("MyEVILWAREProject");location=new QLineEdit(QDir::homePath()+"/EVILWAREProjects");
- kind=new QComboBox;kind->addItems({"C++ Console (CMake)","Python application","Web starter (HTML/CSS/JS)"});
+ kind=new QComboBox;kind->addItems({"C++ Console (CMake)","Python application","Web starter (HTML/CSS/JS)","Node.js application"});
  auto*browse=new QPushButton("Browse…");auto*locrow=new QWidget;auto*lr=new QHBoxLayout(locrow);lr->setContentsMargins(0,0,0,0);lr->addWidget(location,1);lr->addWidget(browse);
  form->addRow("Project name",name);form->addRow("Template",kind);form->addRow("Parent folder",locrow);v->addLayout(form);
  auto*actions=new QHBoxLayout;auto*create=new QPushButton("Create project");create->setMinimumHeight(42);create->setObjectName("primaryButton");
@@ -60,7 +60,8 @@ void ProjectWidget::createProject(){
  bool ok=true;projectKind=kind->currentIndex();
  if(projectKind==0){ok&=put("CMakeLists.txt","cmake_minimum_required(VERSION 3.20)\nproject("+n+" LANGUAGES CXX)\nset(CMAKE_CXX_STANDARD 20)\nadd_executable("+n+" main.cpp)\n");ok&=put("main.cpp","#include <iostream>\nint main(){ std::cout << \"Hello from "+n+"!\\n\"; }\n");}
  else if(projectKind==1){ok&=put("main.py","def main():\n    print('Hello from "+n+"!')\n\nif __name__ == '__main__':\n    main()\n");}
- else {ok&=put("index.html","<!doctype html>\n<html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>"+n+"</title><link rel=\"stylesheet\" href=\"style.css\"></head><body><main><h1>"+n+"</h1><p>Your project starts here.</p></main><script src=\"app.js\"></script></body></html>\n");ok&=put("style.css","body{font-family:system-ui;margin:3rem;background:#101722;color:#e8f0fa}\n");ok&=put("app.js","console.log('"+n+" ready');\n");}
+ else if(projectKind==2){ok&=put("index.html","<!doctype html>\n<html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>"+n+"</title><link rel=\"stylesheet\" href=\"style.css\"></head><body><main><h1>"+n+"</h1><p>Your project starts here.</p></main><script src=\"app.js\"></script></body></html>\n");ok&=put("style.css","body{font-family:system-ui;margin:3rem;background:#101722;color:#e8f0fa}\n");ok&=put("app.js","console.log('"+n+" ready');\n");}
+ else {ok&=put("package.json","{\n  \"name\": \""+n.toLower()+"\",\n  \"version\": \"1.0.0\",\n  \"private\": true,\n  \"scripts\": { \"start\": \"node index.js\" }\n}\n");ok&=put("index.js","console.log('Hello from "+n+"!');\n");}
  if(!ok){message->setText("Project folder created, but one or more files could not be written. Check folder permissions.");return;}
  projectPath=d.absolutePath();buildRunButton->setEnabled(true);output->clear();message->setText("Project created: "+projectPath+" — use Build / Run when ready.");emit projectCreated(projectPath);
  if(projectKind==0){
@@ -68,6 +69,8 @@ void ProjectWidget::createProject(){
   QMessageBox::information(this,"C++ toolchain","EVILWARE will ask CMake to detect the installed compiler. If configuration fails, install Visual Studio Build Tools with Desktop development with C++, or configure a compatible MinGW/Clang toolchain.");
  }else if(projectKind==1&&QStandardPaths::findExecutable("python").isEmpty()&&QStandardPaths::findExecutable("py").isEmpty()){
   ensureDependency("Python 3","python","Python.Python.3.12");
+ }else if(projectKind==3&&QStandardPaths::findExecutable("node").isEmpty()){
+  ensureDependency("Node.js LTS","node","OpenJS.NodeJS.LTS");
  }
 }
 void ProjectWidget::startProcess(const QString&program,const QStringList&arguments,int stage){
@@ -100,6 +103,7 @@ void ProjectWidget::buildOrRun(){
  if(projectPath.isEmpty()||!QDir(projectPath).exists()){message->setText("Create a project first.");return;}
  output->clear();
  if(projectKind==2){const QString page=QDir(projectPath).filePath("index.html");if(!QFileInfo::exists(page)){message->setText("index.html was not found.");return;}QDesktopServices::openUrl(QUrl::fromLocalFile(page));message->setText("Opened the web project in your default browser.");appendOutput("Opened "+page+" in the default browser.\n");return;}
+ if(projectKind==3){const QString node=QStandardPaths::findExecutable("node");if(node.isEmpty()){message->setText("Node.js is not installed or not available on PATH. Use Plugin & Software Manager.");return;}startProcess(node,{QDir(projectPath).filePath("index.js")},3);return;}
  if(projectKind==1){QString python=QStandardPaths::findExecutable("python");QStringList args;if(python.isEmpty()){python=QStandardPaths::findExecutable("py");args<<"-3";}if(python.isEmpty()){message->setText("Python is not installed or not available on PATH. Use Plugin & Software Manager.");return;}args<<QDir(projectPath).filePath("main.py");startProcess(python,args,3);return;}
  const QString cmake=QStandardPaths::findExecutable("cmake");if(cmake.isEmpty()){message->setText("CMake is missing. Install it using Plugin & Software Manager, then retry.");return;}
  startProcess(cmake,{"-S",projectPath,"-B",QDir(projectPath).filePath("build")},1);

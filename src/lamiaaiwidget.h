@@ -25,6 +25,7 @@ private:
     QNetworkAccessManager *network = nullptr;
     QJsonArray history;
     bool busy = false;
+    bool connected = false;
 
     QString selectedProvider() const;
     QString normalizedEndpoint(bool chatRequest) const;

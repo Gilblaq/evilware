@@ -117,6 +117,7 @@ MainWindow::MainWindow(QWidget *p):QMainWindow(p){
  QScrollBar::handle:vertical{background:#3a4655;border-radius:4px;min-height:24px}
  QScrollBar::add-line:vertical,QScrollBar::sub-line:vertical{height:0}
  )");
+ setProperty("baseStyleSheet", styleSheet());
  QSettings saved("EVILWARE","TheUnholyCore3");
  const QString savedTheme=saved.value("appearance/theme","Graphite Red").toString();
  const QString savedBackground=saved.value("appearance/background","Original EVILWARE artwork").toString();
@@ -125,7 +126,7 @@ MainWindow::MainWindow(QWidget *p):QMainWindow(p){
  else if(savedTheme=="Midnight Blue") persistedTheme="QWidget#appRoot{background:#081321;color:#e4efff;} QFrame#sidebar{background:#0c1b2d;border-right:1px solid #1e3a5c;} QFrame#topbar{background:rgba(8,22,39,240);border-bottom:1px solid #1e3a5c;} QListWidget#mainNavigation::item:selected{background:#173b60;border-left:3px solid #4da3ff;} QPushButton#primaryButton{background:#155da0;border:1px solid #4da3ff;color:white;}";
  else persistedTheme="QWidget#appRoot{background:#0d1117;color:#e7ebf1;} QFrame#sidebar{background:#11151b;border-right:1px solid #2a3039;} QFrame#topbar{background:rgba(17,20,26,235);border-bottom:1px solid #2a3039;} QListWidget#mainNavigation::item:selected{background:#43151b;border-left:3px solid #e12636;} QPushButton#primaryButton{background:#a90014;border:1px solid #e12636;color:white;}";
  const QString persistedBackground=savedBackground=="Original EVILWARE artwork"?"background-image:url(:/assets/evilware_reverse_engineering_banner.jpg);background-position:center;background-repeat:no-repeat;":savedBackground=="Deep red"?"background:#21090e;":"background:#10151c;";
- setStyleSheet(styleSheet()+persistedTheme+" QWidget#mainArea{"+persistedBackground+"}");
+ setStyleSheet(property("baseStyleSheet").toString()+persistedTheme+" QWidget#mainArea{"+persistedBackground+"}");
 }
 void MainWindow::addPage(QWidget *page){pages->addWidget(page);}
 void MainWindow::showPage(int row){if(row<0||row>=pages->count())return;pages->setCurrentIndex(row);activePage->setText(nav->item(row)->text());}
@@ -166,7 +167,7 @@ QWidget* MainWindow::settingsPage(){
  auto apply=[this,theme,background](){QString t=theme->currentText(),b=background->currentText();
  QString colors=t=="Light"?"QWidget#appRoot{background:#edf1f5;color:#17202b;} QFrame#sidebar{background:#e0e6ed;border-right:1px solid #bac4d0;} QFrame#topbar{background:rgba(225,231,238,245);border-bottom:1px solid #bac4d0;} QLabel#topbarTitle,QLabel#pageTitle,QLabel#cardTitle{color:#182333;} QLabel#bodyText{color:#344154;} QFrame#infoCard,QFrame#pluginCard{background:rgba(255,255,255,235);border:1px solid #c6d0dc;} QLineEdit,QComboBox,QPlainTextEdit,QTreeView{background:#fff;color:#182333;border:1px solid #bac4d0;}":t=="Midnight Blue"?"QWidget#appRoot{background:#081321;color:#e4efff;} QFrame#sidebar{background:#0c1b2d;border-right:1px solid #1e3a5c;} QFrame#topbar{background:rgba(8,22,39,240);border-bottom:1px solid #1e3a5c;} QListWidget#mainNavigation::item:selected{background:#173b60;border-left:3px solid #4da3ff;} QPushButton#primaryButton{background:#155da0;border:1px solid #4da3ff;color:white;}":"QWidget#appRoot{background:#0d1117;color:#e7ebf1;} QFrame#sidebar{background:#11151b;border-right:1px solid #2a3039;} QFrame#topbar{background:rgba(17,20,26,235);border-bottom:1px solid #2a3039;} QListWidget#mainNavigation::item:selected{background:#43151b;border-left:3px solid #e12636;} QPushButton#primaryButton{background:#a90014;border:1px solid #e12636;color:white;}";
  QString bg=b=="Original EVILWARE artwork"?"background-image:url(:/assets/evilware_reverse_engineering_banner.jpg);background-position:center;background-repeat:no-repeat;":b=="Deep red"?"background:#21090e;":"background:#10151c;";
- setStyleSheet(styleSheet()+colors+" QWidget#mainArea{"+bg+"}");};
+ setStyleSheet(property("baseStyleSheet").toString()+colors+" QWidget#mainArea{"+bg+"}");};
  connect(save,&QPushButton::clicked,w,[&prefs,ownerName,ownerEmail,ownerRole,theme,background,apply]{prefs.setValue("owner/name",ownerName->text().trimmed());prefs.setValue("owner/email",ownerEmail->text().trimmed());prefs.setValue("owner/role",ownerRole->text().trimmed());prefs.setValue("appearance/theme",theme->currentText());prefs.setValue("appearance/background",background->currentText());prefs.sync();apply();});
  apply();v->addStretch();return w;
 }

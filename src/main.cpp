@@ -7,6 +7,7 @@
 #include <QListWidget>
 #include <QStackedWidget>
 #include <QDebug>
+#include <QTreeView>
 
 int main(int argc,char *argv[]){
  QApplication app(argc,argv);
@@ -26,6 +27,11 @@ int main(int argc,char *argv[]){
    qCritical() << "SELF-TEST FAILED: workspace navigation or page stack is missing";
    return 2;
   }
+  auto *projectExplorer=testWindow.findChild<QTreeView*>("projectExplorer");
+  if(!projectExplorer){
+   qCritical() << "SELF-TEST FAILED: Code Studio project explorer is missing";
+   return 5;
+  }
   if(navigation->count()!=20 || pageStack->count()!=20){
    qCritical() << "SELF-TEST FAILED: expected 20 navigation entries and pages; got"
                << navigation->count() << pageStack->count();
@@ -39,7 +45,7 @@ int main(int argc,char *argv[]){
     return 4;
    }
   }
-  qInfo() << "SELF-TEST PASSED: all 20 workspaces construct and navigation maps correctly";
+  qInfo() << "SELF-TEST PASSED: all 20 workspaces construct, navigation maps correctly and Code Studio project explorer exists";
   return 0;
  }
 

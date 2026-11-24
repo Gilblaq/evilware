@@ -30,6 +30,12 @@ jobs:
           New-Item -ItemType Directory -Force -Path dist | Out-Null
           Copy-Item "build/Release/*" dist -Recurse -Force
           Copy-Item README.md dist/README.md -Force
+          Copy-Item ROADMAP.md dist/ROADMAP.md -Force
+          Copy-Item TESTING.md dist/TESTING.md -Force
+          Copy-Item BUILD.md dist/BUILD.md -Force
+          Copy-Item INSTALLATION.md dist/INSTALLATION.md -Force
+          Copy-Item SECURITY.md dist/SECURITY.md -Force
+          Copy-Item docs dist/docs -Recurse -Force
       - name: Run headless workspace smoke test
         shell: pwsh
         env:

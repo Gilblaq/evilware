@@ -11,6 +11,7 @@
 #include <QTabWidget>
 #include <QPixmap>
 #include <QIcon>
+#include <QPlainTextEdit>
 
 int main(int argc,char *argv[]){
  QApplication app(argc,argv);
@@ -40,6 +41,11 @@ int main(int argc,char *argv[]){
    return 2;
   }
   auto *projectExplorer=testWindow.findChild<QTreeView*>("projectExplorer");
+  auto *lamiaChat=testWindow.findChild<QPlainTextEdit*>("lamiaChat");
+  if(!lamiaChat){
+   qCritical() << "SELF-TEST FAILED: LAMIA AI chat interface is missing";
+   return 9;
+  }
   const auto terminalTabWidgets=testWindow.findChildren<QTabWidget*>("terminalTabs");
   if(terminalTabWidgets.size()!=2 || terminalTabWidgets[0]->count()<1 || terminalTabWidgets[1]->count()<1){
    qCritical() << "SELF-TEST FAILED: Windows and Linux terminal tab containers are missing";
@@ -62,7 +68,7 @@ int main(int argc,char *argv[]){
     return 4;
    }
   }
-  qInfo() << "SELF-TEST PASSED: all 20 workspaces construct, navigation maps correctly, Code Studio explorer exists and both terminal tab containers are initialized";
+  qInfo() << "SELF-TEST PASSED: all 20 workspaces construct, navigation maps correctly, Code Studio explorer, LAMIA AI chat, generated artwork and app icon exist, and both terminal tab containers are initialized";
   return 0;
  }
 

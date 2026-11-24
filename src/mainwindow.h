@@ -2,6 +2,7 @@
 #include <QMainWindow>
 #include <QStackedWidget>
 #include <QListWidget>
+#include <QColor>
 class TerminalWidget;
 class EditorWidget;
 class ProjectWidget;
@@ -28,4 +29,5 @@ private:
  QWidget *settingsPage();
  void addPage(QWidget *page);
  void showPage(int row);
+ void applyAppearance(const QString &theme,const QString &background,const QColor &accent,int fontSize);
 };

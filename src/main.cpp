@@ -9,6 +9,8 @@
 #include <QDebug>
 #include <QTreeView>
 #include <QTabWidget>
+#include <QPixmap>
+#include <QIcon>
 
 int main(int argc,char *argv[]){
  QApplication app(argc,argv);
@@ -24,6 +26,14 @@ int main(int argc,char *argv[]){
   MainWindow testWindow;
   auto *navigation=testWindow.findChild<QListWidget*>("mainNavigation");
   auto *pageStack=testWindow.findChild<QStackedWidget*>("pageStack");
+  if(QPixmap(":/assets/evilware_core_banner.png").isNull()){
+   qCritical() << "SELF-TEST FAILED: generated EVILWARE background image is missing";
+   return 7;
+  }
+  if(QIcon(":/assets/evilware_app_icon.png").isNull()){
+   qCritical() << "SELF-TEST FAILED: generated EVILWARE application icon is missing";
+   return 8;
+  }
   if(!navigation || !pageStack){
    qCritical() << "SELF-TEST FAILED: workspace navigation or page stack is missing";
    return 2;

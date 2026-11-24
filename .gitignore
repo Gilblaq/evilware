@@ -5,3 +5,8 @@ dist/
 .vscode/
 .idea/
 .DS_Store
+
+# Generated from the source artwork generator during CMake configure
+assets/evilware_core_banner.png
+assets/evilware_app_icon.png
+assets/evilware_app_icon.ico

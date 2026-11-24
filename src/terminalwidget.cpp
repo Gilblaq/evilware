@@ -1,49 +1,45 @@
 #include "terminalwidget.h"
 #include <QComboBox>
-#include <QLineEdit>
 #include <QPlainTextEdit>
 #include <QTextCursor>
+#include <QKeyEvent>
 #include <QProcess>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
 #include <QDir>
-TerminalWidget::TerminalWidget(QWidget *p):QWidget(p),proc(new QProcess(this)) {
- auto *v=new QVBoxLayout(this); auto *bar=new QHBoxLayout;
- shell=new QComboBox; shell->addItems({"PowerShell","Command Prompt","WSL (if installed)"});
- auto *restart=new QPushButton("Restart shell"); status=new QLabel("Shell stopped");
- bar->addWidget(new QLabel("Environment")); bar->addWidget(shell); bar->addWidget(restart); bar->addWidget(status); v->addLayout(bar);
- output=new QPlainTextEdit; output->setReadOnly(true); output->setMaximumBlockCount(5000);
- output->setObjectName("terminalOutput");
- v->addWidget(output,1); auto *row=new QHBoxLayout; input=new QLineEdit; input->setPlaceholderText("Enter a command and press Enter…");
- auto *send=new QPushButton("Run"); row->addWidget(input,1); row->addWidget(send); v->addLayout(row);
- connect(restart,&QPushButton::clicked,this,&TerminalWidget::startShell); connect(send,&QPushButton::clicked,this,&TerminalWidget::sendCommand);
- connect(input,&QLineEdit::returnPressed,this,&TerminalWidget::sendCommand);
- connect(proc,&QProcess::readyReadStandardOutput,this,&TerminalWidget::readOutput);
- connect(proc,&QProcess::readyReadStandardError,this,&TerminalWidget::readOutput);
- connect(proc,qOverload<int,QProcess::ExitStatus>(&QProcess::finished),this,&TerminalWidget::processEnded);
- startShell();
+#include <functional>
+class TerminalConsole final:public QPlainTextEdit{
+public:
+ explicit TerminalConsole(QWidget*p=nullptr):QPlainTextEdit(p){setReadOnly(false);setUndoRedoEnabled(false);setLineWrapMode(QPlainTextEdit::NoWrap);setFont(QFont("Consolas",10));}
+ std::function<void(const QString&)> submit;QStringList history;int historyIndex=0;
+ void writeOutput(const QString&s){QTextCursor c=document()->end();c.insertText(s);setTextCursor(c);ensureCursorVisible();}
+protected:
+ void keyPressEvent(QKeyEvent*e)override{
+  if(e->key()==Qt::Key_Return||e->key()==Qt::Key_Enter){QTextCursor c=document()->end();c.movePosition(QTextCursor::StartOfBlock);QString cmd=c.block().text();QTextCursor z=document()->end();z.insertText("\n");setTextCursor(z);if(!cmd.trimmed().isEmpty()){history.append(cmd);historyIndex=history.size();}if(submit)submit(cmd);return;}
+  if(e->key()==Qt::Key_Backspace&&textCursor().position()<=document()->lastBlock().position())return;
+  if(e->key()==Qt::Key_Up&&!history.isEmpty()){historyIndex=qMax(0,historyIndex-1);replaceLine(history.value(historyIndex));return;}
+  if(e->key()==Qt::Key_Down&&!history.isEmpty()){historyIndex=qMin(history.size(),historyIndex+1);replaceLine(history.value(historyIndex));return;}
+  QTextCursor c=textCursor();if(c.position()<document()->lastBlock().position()){c.movePosition(QTextCursor::End);setTextCursor(c);}QPlainTextEdit::keyPressEvent(e);
+ }
+ void replaceLine(const QString&s){QTextCursor c=document()->end();c.movePosition(QTextCursor::StartOfBlock,QTextCursor::KeepAnchor);c.insertText(s);setTextCursor(document()->end());}
+};
+TerminalWidget::TerminalWidget(QWidget*p):QWidget(p),proc(new QProcess(this)){
+ auto*v=new QVBoxLayout(this);auto*bar=new QHBoxLayout;shell=new QComboBox;shell->addItems({"PowerShell","Command Prompt","WSL (if installed)"});auto*restart=new QPushButton("Restart shell");status=new QLabel("Shell stopped");bar->addWidget(new QLabel("Environment"));bar->addWidget(shell);bar->addWidget(restart);bar->addWidget(status);v->addLayout(bar);
+ console=new TerminalConsole;console->setObjectName("terminalConsole");console->setPlaceholderText("Type directly here and press Enter to run a command.");v->addWidget(console,1);
+ connect(restart,&QPushButton::clicked,this,&TerminalWidget::startShell);connect(shell,qOverload<int>(&QComboBox::currentIndexChanged),this,&TerminalWidget::startShell);
+ connect(proc,&QProcess::readyReadStandardOutput,this,&TerminalWidget::readOutput);connect(proc,&QProcess::readyReadStandardError,this,&TerminalWidget::readOutput);connect(proc,qOverload<int,QProcess::ExitStatus>(&QProcess::finished),this,&TerminalWidget::processEnded);
+ console->submit=[this](const QString&cmd){sendCommand(cmd);};startShell();
 }
-void TerminalWidget::setShellIndex(int index){ if(index>=0 && index<shell->count()){ shell->setCurrentIndex(index); startShell(); } }
-void TerminalWidget::append(const QString &t){ output->moveCursor(QTextCursor::End); output->insertPlainText(t); output->moveCursor(QTextCursor::End); }
-void TerminalWidget::startShell(){
- if(proc->state()!=QProcess::NotRunning) proc->kill();
- QString program; QStringList args;
+void TerminalWidget::setShellIndex(int i){if(i>=0&&i<shell->count()){shell->setCurrentIndex(i);startShell();}}
+void TerminalWidget::startShell(){if(proc->state()!=QProcess::NotRunning){proc->kill();proc->waitForFinished(1000);}QString program;QStringList args;
 #ifdef Q_OS_WIN
- if(shell->currentIndex()==0){program="powershell.exe";args={"-NoLogo","-NoProfile","-NoExit","-Command","-"};}
- else if(shell->currentIndex()==1){program="cmd.exe";args={"/Q","/K"};}
- else {program="wsl.exe";args={"--exec","bash","-l"};}
+ if(shell->currentIndex()==0){program="powershell.exe";args={"-NoLogo","-NoProfile","-NoExit","-Command","-"};}else if(shell->currentIndex()==1){program="cmd.exe";args={"/Q","/K"};}else{program="wsl.exe";args={"--exec","bash","-l"};}
 #else
- program="bash";args={"-l"};
+ program="bash";args={"-i"};
 #endif
- proc->setWorkingDirectory(QDir::homePath()); proc->start(program,args);
- status->setText("Starting…"); append("\n[EVILWARE] Starting "+program+"\n");
-}
-void TerminalWidget::sendCommand(){
- const QString cmd=input->text().trimmed(); if(cmd.isEmpty())return;
- if(proc->state()!=QProcess::Running){append("\n[Terminal is not running. Restart the shell.]\n");return;}
- append("\n> "+cmd+"\n"); proc->write((cmd+"\n").toUtf8()); input->clear();
-}
-void TerminalWidget::readOutput(){append(QString::fromLocal8Bit(proc->readAllStandardOutput()));append(QString::fromLocal8Bit(proc->readAllStandardError()));status->setText("Running");}
-void TerminalWidget::processEnded(int code,QProcess::ExitStatus){status->setText(QString("Exited (%1)").arg(code));append(QString("\n[Shell exited: %1]\n").arg(code));}
+ proc->setWorkingDirectory(QDir::homePath());proc->start(program,args);status->setText("Starting shell…");console->clear();console->writeOutput("EVILWARE interactive terminal\nStarting "+program+"…\n");console->setFocus();}
+void TerminalWidget::sendCommand(const QString&cmd){if(cmd.trimmed().isEmpty())return;if(proc->state()!=QProcess::Running){console->writeOutput("[Shell is not running. Restart it and try again.]\n");return;}proc->write((cmd+"\n").toLocal8Bit());status->setText("Command sent");}
+void TerminalWidget::readOutput(){auto a=proc->readAllStandardOutput(),b=proc->readAllStandardError();if(!a.isEmpty())console->writeOutput(QString::fromLocal8Bit(a));if(!b.isEmpty())console->writeOutput(QString::fromLocal8Bit(b));status->setText("Running");}
+void TerminalWidget::processEnded(int code,QProcess::ExitStatus){status->setText(QString("Exited (%1)").arg(code));console->writeOutput(QString("\n[Shell exited: %1]\n").arg(code));}

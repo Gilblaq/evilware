@@ -51,7 +51,7 @@ set(EVILWARE_SOURCES
   resources.qrc
 )
 if(WIN32)
-  file(TO_NATIVE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/assets/evilware_app_icon.ico" EVILWARE_ICON_NATIVE)
+  set(EVILWARE_ICON_RESOURCE "${CMAKE_CURRENT_SOURCE_DIR}/assets/evilware_app_icon.ico")
   configure_file(src/evilware.rc.in "${CMAKE_CURRENT_BINARY_DIR}/evilware.rc" @ONLY)
   list(APPEND EVILWARE_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/evilware.rc")
 endif()

@@ -9,6 +9,7 @@
 #include "systeminfo.h"
 #include "systemmonitorwidget.h"
 #include "lamiaaiwidget.h"
+#include "appportfoliowidget.h"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QGridLayout>
@@ -57,8 +58,8 @@ MainWindow::MainWindow(QWidget *p):QMainWindow(p){
  brandText->addWidget(brand);brandText->addWidget(tagline);brandRow->addWidget(mark);brandRow->addLayout(brandText);brandRow->addStretch();side->addLayout(brandRow);
  auto *workspace=new QLabel("WORKSPACE");workspace->setObjectName("sectionCaption");workspace->setContentsMargins(4,20,0,6);side->addWidget(workspace);
  nav=new QListWidget;nav->setObjectName("mainNavigation");nav->setFrameShape(QFrame::NoFrame);nav->setSpacing(3);
- const QStringList items={"Dashboard","Build Apps","Code Studio","Linux Terminal","Windows Terminal","Cyber Lab","Network Tools","Web Security","Digital Forensics","Reverse Engineering","Database Studio","AI Lab","Docker & DevOps","Cloud Manager","File Manager","Git Manager","Plugin Store","System Monitor","Settings","Documentation"};
- const QStringList symbols={"⌂","▦","</>","›_","$_","◇","⌁","◎","▤","⌘","▥","✦","◈","☁","▣","⑂","⊞","◷","⚙","≡"};
+ const QStringList items={"Dashboard","Build Apps","Code Studio","Linux Terminal","Windows Terminal","Cyber Lab","Network Tools","Web Security","Digital Forensics","Reverse Engineering","Database Studio","AI Lab","Docker & DevOps","Cloud Manager","File Manager","Git Manager","Plugin Store","System Monitor","Settings","Documentation","My Apps"};
+ const QStringList symbols={"⌂","▦","</>","›_","$_","◇","⌁","◎","▤","⌘","▥","✦","◈","☁","▣","⑂","⊞","◷","⚙","≡","▣"};
  for(int i=0;i<items.size();++i){
   auto *item=new QListWidgetItem(symbols.value(i,"•")+"   "+items[i]);
   item->setData(Qt::UserRole,items[i]);
@@ -103,6 +104,7 @@ MainWindow::MainWindow(QWidget *p):QMainWindow(p){
  addPage(new SystemMonitorWidget);               // 18 — read-only process inspection
  addPage(settingsPage());                       // 19 Settings
  addModule("Documentation","Product guides, module references, setup instructions and troubleshooting.",{"Open user guide, roadmap and test matrix","Open build and installation guides","Open security policy"},{"Bundled EVILWARE documentation"},"AVAILABLE / LOCAL GUIDES"); // 20
+ addPage(new AppPortfolioWidget);                 // 21 — private local app portfolio
 
  connect(nav,&QListWidget::currentRowChanged,this,&MainWindow::showPage);nav->setCurrentRow(0);
  setStyleSheet(R"(
@@ -203,7 +205,7 @@ QWidget* MainWindow::dashboard(){
  for(int i=0;i<labels.size();++i){auto *card=new QFrame;card->setObjectName("infoCard");auto *l=new QVBoxLayout(card);l->setContentsMargins(16,14,16,14);auto *a=new QLabel(labels[i]);a->setObjectName("mutedText");auto *b=new QLabel(values[i]);b->setStyleSheet("font-size:13pt;font-weight:600");b->setWordWrap(true);l->addWidget(a);l->addWidget(b);grid->addWidget(card,i/3,i%3);}
  v->addLayout(grid);
  auto *section=new QLabel("All workspaces");section->setObjectName("pageTitle");section->setStyleSheet("font-size:16pt;font-weight:600");v->addWidget(section);
- auto *list=new QLabel("20 dedicated sections are available in the navigation. Existing working tools include project creation, source editing, local terminals, basic network diagnostics, file browsing, Git commands and the plugin installer. Other workspaces are being implemented and are clearly marked.");list->setObjectName("bodyText");list->setWordWrap(true);v->addWidget(list);v->addStretch();return w;
+ auto *list=new QLabel("21 dedicated sections are available in the navigation. Existing working tools include project creation, source editing, local terminals, basic network diagnostics, file browsing, Git commands and the plugin installer. Other workspaces are being implemented and are clearly marked.");list->setObjectName("bodyText");list->setWordWrap(true);v->addWidget(list);v->addStretch();return w;
 }
 QWidget* MainWindow::filePage(){
  auto *w=new QWidget;auto *v=new QVBoxLayout(w);v->setContentsMargins(24,20,24,20);auto *title=new QLabel("File Manager");title->setObjectName("pageTitle");v->addWidget(title);

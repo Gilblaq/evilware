@@ -15,7 +15,7 @@ for (const key of required) if (!process.env[key]) console.warn(`Missing environ
 
 app.use(helmet());
 app.use(cors({ origin: (process.env.ALLOWED_ORIGINS || "*").split(",").map(x => x.trim()) }));
-app.use(express.json({ limit: "32kb" }));
+app.use(express.json({ limit: "32kb", verify: (req, _res, buf) => { req.rawBody = Buffer.from(buf); } }));
 
 await pool.query(`
 CREATE TABLE IF NOT EXISTS users (
@@ -99,11 +99,14 @@ app.post("/api/billing/verify/:reference",auth,async(req,res)=>{
   res.json({subscription:await entitlement(req.user.id)});
  } catch(e){console.error(e);res.status(502).json({error:"Could not verify payment"});}
 });
-app.post("/api/payments/paystack-webhook",express.raw({type:"application/json"}),async(req,res)=>{
+app.post("/api/payments/paystack-webhook",async(req,res)=>{
  const signature=req.headers["x-paystack-signature"];
- const expected=crypto.createHmac("sha512",process.env.PAYSTACK_SECRET_KEY).update(req.body).digest("hex");
- if(!signature||!crypto.timingSafeEqual(Buffer.from(signature),Buffer.from(expected))) return res.sendStatus(401);
- const event=JSON.parse(req.body.toString("utf8"));
+ const raw=req.rawBody||Buffer.from("");
+ const expected=crypto.createHmac("sha512",process.env.PAYSTACK_SECRET_KEY).update(raw).digest("hex");
+ const supplied=Buffer.from(String(signature||""));
+ const calculated=Buffer.from(expected);
+ if(supplied.length!==calculated.length||!crypto.timingSafeEqual(supplied,calculated)) return res.sendStatus(401);
+ const event=req.body;
  if(event.event==="charge.success"&&event.data?.reference) { try { await activatePayment(event.data.reference); } catch(e){console.error(e);return res.sendStatus(500);} }
  res.sendStatus(200);
 });

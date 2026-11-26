@@ -8,6 +8,7 @@ class EditorWidget;
 class ProjectWidget;
 class CyberLabWidget;
 class PluginStoreWidget;
+class OwnerDashboardWidget;
 class QLabel;
 class MainWindow : public QMainWindow {
  Q_OBJECT
@@ -22,6 +23,7 @@ private:
  ProjectWidget *projects;
  CyberLabWidget *cyber;
  PluginStoreWidget *plugins;
+ OwnerDashboardWidget *ownerDashboard;
  QLabel *activePage;
  QWidget *dashboard();
  QWidget *filePage();

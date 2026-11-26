@@ -34,7 +34,8 @@ If no release is published yet, the latest successful build can be found under t
 18. System Monitor
 19. Settings
 20. Documentation
-21. My Apps — a private local portfolio for tracking applications, versions, stages, repositories and working folders. Subscription tracking is planned for a later update.
+21. My Apps — a local portfolio for tracking applications, versions, stages, repositories and working folders.
+22. Premium Workspace — account login, server-verified subscriptions and owner customer management. Premium access is granted only after Paystack payment verification by the hosted API.
 
 ## What is implemented
 
@@ -48,7 +49,7 @@ Some specialist workspaces are still foundations rather than complete tool suite
 
 ## Beta and updates
 
-EVILWARE is being distributed as a free beta through GitHub Releases. New tagged versions are built and packaged by GitHub Actions, then attached to the matching release automatically. The app does not currently include a hosted account service or silent remote-control system.
+EVILWARE is being distributed as a free beta through GitHub Releases. New tagged versions are built and packaged by GitHub Actions, then attached to the matching release automatically. Premium Workspace uses a separately deployed subscription API. Payment secrets stay on the server; the desktop client never stores payment-provider credentials. The subscription API is an initial integration foundation and must be deployed and tested before paid access is offered.
 
 ## Build and validation
 

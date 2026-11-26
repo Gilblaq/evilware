@@ -28,8 +28,8 @@ set(EVILWARE_SOURCES
   src/main.cpp
   src/mainwindow.cpp
   src/mainwindow.h
-  src/ownerdashboardwidget.cpp
-  src/ownerdashboardwidget.h
+  src/premiumworkspacewidget.cpp
+  src/premiumworkspacewidget.h
   src/appportfoliowidget.cpp
   src/appportfoliowidget.h
   src/terminalwidget.cpp

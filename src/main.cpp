@@ -55,12 +55,12 @@ int main(int argc,char *argv[]){
    qCritical() << "SELF-TEST FAILED: Code Studio project explorer is missing";
    return 5;
   }
-  if(navigation->count()!=20 || pageStack->count()!=20){
+  if(navigation->count()!=21 || pageStack->count()!=21){
    qCritical() << "SELF-TEST FAILED: expected 20 navigation entries and pages; got"
                << navigation->count() << pageStack->count();
    return 3;
   }
-  for(int i=0;i<20;++i){
+  for(int i=0;i<21;++i){
    navigation->setCurrentRow(i);
    if(pageStack->currentIndex()!=i){
     qCritical() << "SELF-TEST FAILED: navigation entry" << i

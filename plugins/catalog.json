@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "repository": "Gilblaq/evilware",
+  "plugins": [
+    {
+      "id": "dev-project-audit",
+      "name": "Project Audit Toolkit",
+      "category": "Developer",
+      "version": "1.0.0",
+      "description": "Read-only report of project structure, languages, Git status and TODO markers.",
+      "entry": "project-audit.ps1",
+      "files": [
+        "project-audit.ps1"
+      ],
+      "permissions": [
+        "Read files under the selected project folder",
+        "Read Git status when Git is installed"
+      ],
+      "usage": "Run in PowerShell: .\\project-audit.ps1 -Path C:\\path\\to\\project"
+    },
+    {
+      "id": "dev-port-inspector",
+      "name": "Developer Port Inspector",
+      "category": "Developer",
+      "version": "1.0.0",
+      "description": "Lists listening TCP ports and owning processes to diagnose local development servers.",
+      "entry": "port-inspector.ps1",
+      "files": [
+        "port-inspector.ps1"
+      ],
+      "permissions": [
+        "Read local TCP connection and process information"
+      ],
+      "usage": "Run in PowerShell: .\\port-inspector.ps1"
+    },
+    {
+      "id": "sec-dns-inspector",
+      "name": "DNS Inspector",
+      "category": "Cybersecurity",
+      "version": "1.0.0",
+      "description": "Looks up DNS records for a domain using Windows DNS tools.",
+      "entry": "dns-inspector.ps1",
+      "files": [
+        "dns-inspector.ps1"
+      ],
+      "permissions": [
+        "Make DNS queries for the domain you specify"
+      ],
+      "usage": "Run: .\\dns-inspector.ps1 -Domain example.com"
+    },
+    {
+      "id": "sec-http-header-audit",
+      "name": "HTTP Security Header Audit",
+      "category": "Cybersecurity",
+      "version": "1.0.0",
+      "description": "Checks security-related HTTP response headers on a website you own or are authorized to assess.",
+      "entry": "http-header-audit.ps1",
+      "files": [
+        "http-header-audit.ps1"
+      ],
+      "permissions": [
+        "Connect to the HTTP/HTTPS URL you specify"
+      ],
+      "usage": "Run: .\\http-header-audit.ps1 -Url https://your-site.example"
+    },
+    {
+      "id": "sec-local-network-inventory",
+      "name": "Local Network Inventory",
+      "category": "Cybersecurity",
+      "version": "1.0.0",
+      "description": "Reports this computer's network adapters, IP configuration and cached ARP neighbours.",
+      "entry": "local-network-inventory.ps1",
+      "files": [
+        "local-network-inventory.ps1"
+      ],
+      "permissions": [
+        "Read local adapter configuration and ARP cache"
+      ],
+      "usage": "Run: .\\local-network-inventory.ps1"
+    }
+  ]
+}

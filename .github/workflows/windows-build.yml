@@ -16,6 +16,12 @@ jobs:
     runs-on: windows-2022
     steps:
       - uses: actions/checkout@v4
+      - name: Set up Node.js for subscription API validation
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate subscription API syntax
+        run: node --check server/src/server.js
       - name: Set up Python for original asset generation
         uses: actions/setup-python@v5
         with:

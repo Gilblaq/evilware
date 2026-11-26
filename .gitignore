@@ -10,3 +10,7 @@ dist/
 assets/evilware_core_banner.png
 assets/evilware_app_icon.png
 assets/evilware_app_icon.ico
+
+# Subscription API local secrets and installed dependencies
+server/.env
+server/node_modules/

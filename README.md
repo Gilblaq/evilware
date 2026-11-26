@@ -10,7 +10,7 @@ EVILWARE is a native Windows x64 developer workstation built with C++20 and Qt 6
 - **Portable:** download `EVILWARE-Unholy-Core-3-Windows-x64-Portable.zip`, extract the folder, and run `EVILWARE.exe`.
 - Releases: https://github.com/Gilblaq/evilware/releases
 
-If no release is published yet, the latest successful build can be found under the repository's Actions tab in the `EVILWARE-Unholy-Core-3-Windows-x64` artifact.
+If no release is published yet, the latest successful build can be found under the repository's Actions tab in the separate `EVILWARE-Unholy-Core-3-Windows-x64-Portable` artifact.
 
 ## Workspaces
 
@@ -51,7 +51,7 @@ EVILWARE is being distributed as a free beta through GitHub Releases. New tagged
 
 ## Build and validation
 
-Every push to `main` starts the Windows x64 GitHub Actions workflow. It builds EVILWARE, deploys Qt runtime files, runs a headless navigation smoke test, creates the Windows installer and packages a portable ZIP.
+Every push to `main` starts the Windows x64 GitHub Actions workflow. It builds EVILWARE, deploys Qt runtime files, runs a headless navigation smoke test, creates the Windows installer and packages a separately downloadable portable ZIP.
 
 A successful CI run confirms compilation, the automated smoke test and packaging. It does not certify every workspace or replace manual testing on a clean Windows PC.
 

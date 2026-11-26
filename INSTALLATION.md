@@ -18,3 +18,8 @@ The application has optional integrations with third-party tools. Some workspace
 
 ## Release status
 A CI artifact is a development build until it passes clean-machine installation, launch, upgrade and uninstall tests on supported Windows versions. No public release should be described as fully validated until those checks are recorded in [TESTING.md](TESTING.md).
+
+
+## Premium Workspace setup
+
+The desktop Premium Workspace requires the separate subscription API in `server/`. Until that API is deployed and configured, account sign-in and checkout will not be available. Follow [server/README.md](server/README.md) to deploy it on Render and configure Paystack. Do not publish paid subscriptions until webhook verification, renewal, expiry and revocation have been tested with Paystack test credentials.

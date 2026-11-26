@@ -22,6 +22,8 @@
 #include <QSaveFile>
 #include <QDesktopServices>
 #include <QUrl>
+#include <QDate>
+#include <QAbstractItemView>
 
 AppPortfolioWidget::AppPortfolioWidget(QWidget *parent) : QWidget(parent) {
     auto *root = new QVBoxLayout(this);

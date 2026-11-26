@@ -10,6 +10,7 @@
 #include "systemmonitorwidget.h"
 #include "lamiaaiwidget.h"
 #include "appportfoliowidget.h"
+#include "ownerdashboardwidget.h"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QGridLayout>
@@ -58,8 +59,8 @@ MainWindow::MainWindow(QWidget *p):QMainWindow(p){
  brandText->addWidget(brand);brandText->addWidget(tagline);brandRow->addWidget(mark);brandRow->addLayout(brandText);brandRow->addStretch();side->addLayout(brandRow);
  auto *workspace=new QLabel("WORKSPACE");workspace->setObjectName("sectionCaption");workspace->setContentsMargins(4,20,0,6);side->addWidget(workspace);
  nav=new QListWidget;nav->setObjectName("mainNavigation");nav->setFrameShape(QFrame::NoFrame);nav->setSpacing(3);
- const QStringList items={"Dashboard","Build Apps","Code Studio","Linux Terminal","Windows Terminal","Cyber Lab","Network Tools","Web Security","Digital Forensics","Reverse Engineering","Database Studio","AI Lab","Docker & DevOps","Cloud Manager","File Manager","Git Manager","Plugin Store","System Monitor","Settings","Documentation","My Apps"};
- const QStringList symbols={"⌂","▦","</>","›_","$_","◇","⌁","◎","▤","⌘","▥","✦","◈","☁","▣","⑂","⊞","◷","⚙","≡","▣"};
+ const QStringList items={"Dashboard","Build Apps","Code Studio","Linux Terminal","Windows Terminal","Cyber Lab","Network Tools","Web Security","Digital Forensics","Reverse Engineering","Database Studio","AI Lab","Docker & DevOps","Cloud Manager","File Manager","Git Manager","Plugin Store","System Monitor","Settings","Documentation","My Apps","Owner Console"};
+ const QStringList symbols={"⌂","▦","</>","›_","$_","◇","⌁","◎","▤","⌘","▥","✦","◈","☁","▣","⑂","⊞","◷","⚙","≡","▣","◈"};
  for(int i=0;i<items.size();++i){
   auto *item=new QListWidgetItem(symbols.value(i,"•")+"   "+items[i]);
   item->setData(Qt::UserRole,items[i]);
@@ -105,6 +106,7 @@ MainWindow::MainWindow(QWidget *p):QMainWindow(p){
  addPage(settingsPage());                       // 19 Settings
  addModule("Documentation","Product guides, module references, setup instructions and troubleshooting.",{"Open user guide, roadmap and test matrix","Open build and installation guides","Open security policy"},{"Bundled EVILWARE documentation"},"AVAILABLE / LOCAL GUIDES"); // 20
  addPage(new AppPortfolioWidget);                 // 21 — private local app portfolio
+ ownerDashboard=new OwnerDashboardWidget; addPage(ownerDashboard); // 22 — creator portfolio and release analytics
 
  connect(nav,&QListWidget::currentRowChanged,this,&MainWindow::showPage);nav->setCurrentRow(0);
  setStyleSheet(R"(

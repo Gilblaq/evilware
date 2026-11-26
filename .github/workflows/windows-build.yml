@@ -84,5 +84,4 @@ jobs:
           prerelease: ${{ contains(github.ref_name, '-') }}
           generate_release_notes: true
           files: |
-            installer-output/EVILWARE-Unholy-Core-3-x64.exe
             EVILWARE-Unholy-Core-3-Windows-x64-Portable.zip

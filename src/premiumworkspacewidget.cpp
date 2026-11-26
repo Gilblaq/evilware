@@ -6,6 +6,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QTableWidget>
+#include <QAbstractItemView>
 #include <QHeaderView>
 #include <QMessageBox>
 #include <QNetworkAccessManager>

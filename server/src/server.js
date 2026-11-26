@@ -50,7 +50,7 @@ async function entitlement(userId) {
 }
 app.get("/api/health", (_req,res) => res.json({ ok:true, service:"EVILWARE Subscription API" }));
 
-app.post("/api/auth/register", async (req,res) => {
+app.post("/api/auth/register", authLimiter, async (req,res) => {
  try {
   const email=String(req.body.email||"").trim().toLowerCase(), password=String(req.body.password||"");
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || password.length<10) return res.status(400).json({error:"Use a valid email and a password of at least 10 characters"});
@@ -60,7 +60,7 @@ app.post("/api/auth/register", async (req,res) => {
   const user=r.rows[0]; res.status(201).json({token:tokenFor(user),user,subscription:await entitlement(user.id)});
  } catch(e) { if(e.code==="23505") return res.status(409).json({error:"An account with that email already exists"}); console.error(e); res.status(500).json({error:"Could not create account"}); }
 });
-app.post("/api/auth/login", async (req,res) => {
+app.post("/api/auth/login", authLimiter, async (req,res) => {
  const email=String(req.body.email||"").trim().toLowerCase(), password=String(req.body.password||"");
  const r=await pool.query("SELECT id,email,role,password_hash FROM users WHERE email=$1",[email]);
  if(!r.rowCount || !(await bcrypt.compare(password,r.rows[0].password_hash))) return res.status(401).json({error:"Email or password is incorrect"});

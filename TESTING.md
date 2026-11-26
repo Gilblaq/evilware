@@ -5,7 +5,7 @@ Updated: 2026-11-24
 ## Evidence rules
 
 - **CI build** means GitHub Actions compiled and packaged the application.
-- **Navigation smoke test** means the application could construct its main window and verify twenty navigation/page mappings using the offscreen Qt platform.
+- **Navigation smoke test** means the application could construct its main window and verify twenty-one navigation/page mappings using the offscreen Qt platform.
 - **Functional test** means the named operation was actually executed and its result checked.
 - **Manual Windows test** means the packaged application was run on a real supported Windows installation.
 - Never infer functional or manual test success from a green compile.
@@ -16,7 +16,7 @@ Updated: 2026-11-24
 - Run: #89.
 - Commit: `1f173a287458ec87b32e46ab7b3a299c15932132`.
 - Result: success.
-- Completed steps: Qt install, CMake configure, Release build, Qt runtime deployment, 20-page navigation smoke test, Inno Setup installer build, portable ZIP packaging and artifact upload.
+- Completed steps: Qt install, CMake configure, Release build, Qt runtime deployment, 21-page navigation smoke test, Inno Setup installer build, portable ZIP packaging and artifact upload.
 - Run URL: https://github.com/Gilblaq/evilware/actions/runs/45453046050
 
 ## Workspace matrix
@@ -42,7 +42,7 @@ Updated: 2026-11-24
 | Plugin Store | winget package check/install/update/uninstall workflow | Not end-to-end tested |
 | System Monitor | Process inspection and system metrics | CI compile only; manual validation pending |
 | Settings | QSettings owner profile and appearance persistence | CI compile only; restart test pending |
-| Documentation | Module documentation foundation | Content review pending |
+| Documentation | Module documentation foundation | Content review pending |\n| My Apps | Local JSON portfolio, add/edit/remove and open-folder actions | CI compile; manual CRUD and restart persistence test pending |
 
 ## Terminal regression tests
 
@@ -89,6 +89,6 @@ Updated: 2026-11-24
 - [ ] Verify startup, settings and all navigation pages.
 - [ ] Verify installer upgrade behavior.
 - [ ] Verify uninstaller removes application files without deleting user projects.
-- [ ] Verify portable ZIP after full extraction.
+- [ ] Verify portable ZIP after full extraction.\n- [ ] Verify the separately named portable artifact downloads and extracts without an installer.
 - [ ] Generate and verify SHA-256 checksums.
 - [ ] Record manual test machine, OS build, app version and result.

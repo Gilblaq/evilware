@@ -34,10 +34,11 @@ If no release is published yet, the latest successful build can be found under t
 18. System Monitor
 19. Settings
 20. Documentation
+21. My Apps — a private local portfolio for tracking applications, versions, stages, repositories and working folders. Subscription tracking is planned for a later update.
 
 ## What is implemented
 
-Implemented foundations include project generation, source-file editing, local PowerShell/CMD and WSL terminals, basic authorized network diagnostics, file browsing, Git status/log/branch inspection, system information and a package manager.
+My Apps lets you add, edit, remove and open registered app folders. Its portfolio is stored locally in the current Windows user's EVILWARE application-data directory.\n\nImplemented foundations include project generation, source-file editing, local PowerShell/CMD and WSL terminals, basic authorized network diagnostics, file browsing, Git status/log/branch inspection, system information and a package manager.
 
 The Plugin & Software Manager currently provides a curated catalogue for Git, Visual Studio Code, Python, Node.js, Docker Desktop, Ubuntu on WSL, Nmap and Wireshark. It checks for installed packages and offers install, update, reinstall and uninstall actions through Windows Package Manager (winget). Package operations require user confirmation and display completion or failure details.
 

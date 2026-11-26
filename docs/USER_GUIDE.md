@@ -19,7 +19,7 @@ This guide describes functions currently present in the development build. A wor
 - **Plugin Store:** checks and manages a curated set of software through Windows Package Manager (winget). Review the publisher and package details before approving any install or removal.
 - **System Monitor:** read-only process listing and CPU/physical-memory readings. Windows may restrict details for protected processes.
 
-## Specialist workspace utilities
+## My Apps\n- **My Apps:** maintain a private local list of applications with version, development stage, target platform, working folder, repository/website and notes. Add, edit, remove and open a registered app's working folder. Removing an entry never deletes the actual project files. Data is saved in the current Windows user's EVILWARE application-data directory. Subscription tracking is reserved for a later update; this build does not process payments.\n\n## Specialist workspace utilities
 - **Network Tools:** ping, DNS lookup, route trace and interface configuration.
 - **Web Security:** request HTTP response headers and inspect TLS connection output for a URL you are authorized to assess. These are basic checks, not a vulnerability scanner.
 - **Digital Forensics:** select a file and calculate its SHA-256 hash. Preserve originals; use forensic write blockers and a proper evidence process for real investigations.

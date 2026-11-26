@@ -85,7 +85,7 @@ void PluginStoreWidget::rebuild(const QString &filter){
  listLayout->addStretch();
 }
 void PluginStoreWidget::installPlugin(const QString &id,const QString &name,const QString &relativePath){
- if(!QMessageBox::question(this,"Install EVILWARE plugin","Download "+name+" from the official EVILWARE GitHub repository? The script will be saved locally and will not run automatically.",QMessageBox::Yes|QMessageBox::No,QMessageBox::No)==QMessageBox::Yes)return;
+ if(QMessageBox::question(this,"Install EVILWARE plugin","Download "+name+" from the official EVILWARE GitHub repository? The script will be saved locally and will not run automatically.",QMessageBox::Yes|QMessageBox::No,QMessageBox::No)!=QMessageBox::Yes)return;
  const QUrl url("https://raw.githubusercontent.com/Gilblaq/evilware/main/plugins/"+relativePath);
  if(url.host()!="raw.githubusercontent.com"||!url.path().startsWith("/Gilblaq/evilware/main/plugins/")||!url.path().endsWith(".ps1")){QMessageBox::warning(this,"Blocked plugin URL","The plugin download URL did not pass the repository allowlist.");return;}
  status->setText("Downloading "+name+" from GitHub…");

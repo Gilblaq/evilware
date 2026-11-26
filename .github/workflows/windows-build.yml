@@ -66,10 +66,13 @@ jobs:
         run: Compress-Archive -Path dist/* -DestinationPath EVILWARE-Unholy-Core-3-Windows-x64-Portable.zip -Force
       - uses: actions/upload-artifact@v4
         with:
-          name: EVILWARE-Unholy-Core-3-Windows-x64
-          path: |
-            installer-output/EVILWARE-Unholy-Core-3-x64.exe
-            EVILWARE-Unholy-Core-3-Windows-x64-Portable.zip
+          name: EVILWARE-Unholy-Core-3-Windows-x64-Portable
+          path: EVILWARE-Unholy-Core-3-Windows-x64-Portable.zip
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        with:
+          name: EVILWARE-Unholy-Core-3-x64-Installer
+          path: installer-output/EVILWARE-Unholy-Core-3-x64.exe
           if-no-files-found: error
 
       - name: Publish GitHub Release

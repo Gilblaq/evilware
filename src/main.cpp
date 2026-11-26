@@ -23,7 +23,7 @@ int main(int argc,char *argv[]){
  app.setFont(QFont("Segoe UI",10));
 
  // Headless CI smoke test: construct the real workspace and verify that all
- // 20 navigation entries map to 20 distinct pages without showing a window.
+ // 22 navigation entries map to 22 distinct pages without showing a window.
  if(app.arguments().contains("--self-test")){
   MainWindow testWindow;
   auto *navigation=testWindow.findChild<QListWidget*>("mainNavigation");
@@ -55,12 +55,12 @@ int main(int argc,char *argv[]){
    qCritical() << "SELF-TEST FAILED: Code Studio project explorer is missing";
    return 5;
   }
-  if(navigation->count()!=21 || pageStack->count()!=21){
-   qCritical() << "SELF-TEST FAILED: expected 20 navigation entries and pages; got"
+  if(navigation->count()!=22 || pageStack->count()!=22){
+   qCritical() << "SELF-TEST FAILED: expected 22 navigation entries and pages; got"
                << navigation->count() << pageStack->count();
    return 3;
   }
-  for(int i=0;i<21;++i){
+  for(int i=0;i<22;++i){
    navigation->setCurrentRow(i);
    if(pageStack->currentIndex()!=i){
     qCritical() << "SELF-TEST FAILED: navigation entry" << i
@@ -68,7 +68,7 @@ int main(int argc,char *argv[]){
     return 4;
    }
   }
-  qInfo() << "SELF-TEST PASSED: all 20 workspaces construct, navigation maps correctly, Code Studio explorer, LAMIA AI chat, generated artwork and app icon exist, and both terminal tab containers are initialized";
+  qInfo() << "SELF-TEST PASSED: all 22 workspaces construct, navigation maps correctly, Code Studio explorer, LAMIA AI chat, generated artwork and app icon exist, and both terminal tab containers are initialized";
   return 0;
  }
 

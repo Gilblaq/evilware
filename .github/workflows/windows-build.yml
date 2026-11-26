@@ -76,12 +76,12 @@ jobs:
           if-no-files-found: error
 
       - name: Publish GitHub Release
-        if: startsWith(github.ref, 'refs/tags/')
+        if: github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:
-          name: EVILWARE — The Unholy Core 3 ${{ github.ref_name }}
-          tag_name: ${{ github.ref_name }}
-          prerelease: ${{ contains(github.ref_name, '-') }}
+          name: EVILWARE — The Unholy Core 3 1.0.0 Beta
+          tag_name: v1.0.0-beta
+          prerelease: true
           generate_release_notes: true
           files: |
             EVILWARE-Unholy-Core-3-Windows-x64-Portable.zip

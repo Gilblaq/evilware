@@ -5,6 +5,7 @@ import pg from "pg";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "node:crypto";
+import rateLimit from "express-rate-limit";
 
 const { Pool } = pg;
 const app = express();
@@ -14,7 +15,7 @@ const required = ["DATABASE_URL", "JWT_SECRET", "PAYSTACK_SECRET_KEY", "OWNER_EM
 for (const key of required) if (!process.env[key]) console.warn(`Missing environment variable: ${key}`);
 
 app.use(helmet());
-app.use(cors({ origin: (process.env.ALLOWED_ORIGINS || "*").split(",").map(x => x.trim()) }));
+app.use(cors({ origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(",").map(x => x.trim()) : true }));
 app.use(express.json({ limit: "32kb", verify: (req, _res, buf) => { req.rawBody = Buffer.from(buf); } }));
 
 await pool.query(`
@@ -30,6 +31,8 @@ CREATE TABLE IF NOT EXISTS subscriptions (
 );
 `);
 
+const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 12, standardHeaders: "draft-7", legacyHeaders: false });
+const checkoutLimiter = rateLimit({ windowMs: 60 * 60 * 1000, limit: 6, standardHeaders: "draft-7", legacyHeaders: false });
 const tokenFor = user => jwt.sign({ sub: String(user.id), role: user.role }, process.env.JWT_SECRET, { expiresIn: "7d" });
 async function auth(req, res, next) {
  try {
@@ -64,8 +67,13 @@ app.post("/api/auth/login", async (req,res) => {
  const {password_hash,...user}=r.rows[0]; res.json({token:tokenFor(user),user,subscription:await entitlement(user.id)});
 });
 app.get("/api/me",auth,async(req,res)=>res.json({user:req.user,subscription:await entitlement(req.user.id)}));
+app.get("/api/premium/access",auth,async(req,res)=>{
+ const subscription=await entitlement(req.user.id);
+ const allowed=req.user.role==="owner"||Boolean(subscription);
+ res.json({allowed,role:req.user.role,subscription});
+});
 
-app.post("/api/billing/checkout",auth,async(req,res)=>{
+app.post("/api/billing/checkout",auth,checkoutLimiter,async(req,res)=>{
  try {
   const plan=req.body.plan==="annual"?"annual":"monthly";
   const amount=Number(plan==="annual"?process.env.ANNUAL_PRICE_GHS:process.env.MONTHLY_PRICE_GHS);
@@ -85,7 +93,10 @@ async function activatePayment(reference) {
  const expected=Number(plan==="annual"?process.env.ANNUAL_PRICE_GHS:process.env.MONTHLY_PRICE_GHS)*100;
  if(!userId||!Number.isFinite(expected)||Number(result.data.amount)!==Math.round(expected)) return false;
  await pool.query(`INSERT INTO subscriptions(user_id,plan,status,starts_at,expires_at,payment_reference)
- VALUES($1,$2,'active',NOW(),NOW()+CASE WHEN $2='annual' THEN INTERVAL '365 days' ELSE INTERVAL '30 days' END,$3)
+ VALUES($1,$2,'active',
+ GREATEST(NOW(),COALESCE((SELECT MAX(expires_at) FROM subscriptions WHERE user_id=$1 AND status='active' AND expires_at>NOW()),NOW())),
+ GREATEST(NOW(),COALESCE((SELECT MAX(expires_at) FROM subscriptions WHERE user_id=$1 AND status='active' AND expires_at>NOW()),NOW()))+
+ CASE WHEN $2='annual' THEN INTERVAL '365 days' ELSE INTERVAL '30 days' END,$3)
  ON CONFLICT(payment_reference) DO NOTHING`,[userId,plan,reference]);
  return true;
 }

@@ -4,6 +4,8 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QTableWidget>
+#include <QFrame>
+#include <QAbstractItemView>
 #include <QHeaderView>
 #include <QPushButton>
 #include <QJsonDocument>
